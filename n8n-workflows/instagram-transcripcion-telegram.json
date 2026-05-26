@@ -1,0 +1,492 @@
+{
+  "name": "Transcripción de Videos de Instagram via Telegram (@CronistaYT_bot)",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## 🎬 Transcripción de Instagram via Telegram\n\n### Antes de activar, configura:\n\n**1. Credencial de Telegram:**\n- Ve a Credentials → New → Telegram\n- Pega el token de @CronistaYT_bot (obtenido de @BotFather)\n- Nombra la credencial: `CronistaYT Bot`\n\n**2. Variables en n8n (Settings → Variables):**\n- `RAPIDAPI_KEY` → tu clave de RapidAPI\n  - Suscríbete a instagram-scraper-api2 en rapidapi.com\n- `OPENAI_API_KEY` → tu clave de OpenAI\n\n**3. Activar webhook de Telegram:**\n- Activa el workflow y copia la URL del webhook del nodo Trigger\n- Regístrala llamando:\n  `https://api.telegram.org/bot{TOKEN}/setWebhook?url={WEBHOOK_URL}`\n\n### Uso:\n1. Envía o reenvía un link de Instagram al bot @CronistaYT_bot\n2. El bot descarga el video y transcribe el audio con Whisper\n3. Recibes la transcripción en el mismo chat\n\n### Tipos de links soportados:\n- Reels: instagram.com/reel/...\n- Posts con video: instagram.com/p/...\n- IGTV: instagram.com/tv/...",
+        "height": 460,
+        "width": 540,
+        "color": 5
+      },
+      "id": "00000000-0000-0000-0000-000000000001",
+      "name": "📋 Instrucciones de configuración",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [200, -200]
+    },
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "00000000-0000-0000-0000-000000000002",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.1,
+      "position": [200, 360],
+      "webhookId": "cronista-instagram-transcripcion",
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "CronistaYT Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const message = $input.first().json?.message || {};\nconst text = message?.text || message?.caption || '';\nconst chat_id = message?.chat?.id;\nconst message_id = message?.message_id;\nconst from_name = message?.from?.first_name || 'Usuario';\n\n// Match Instagram URLs: reels, posts, TV, stories\nconst instagramRegex = /https?:\\/\\/(www\\.)?(instagram\\.com|instagr\\.am)\\/[^\\s]+/gi;\nconst matches = text.match(instagramRegex);\nconst raw_url = matches ? matches[0] : null;\n\n// Remove trailing punctuation that may be part of the message, not the URL\nconst url = raw_url ? raw_url.replace(/[.,;!?:)\"']+$/, '') : null;\n\nreturn [{ \n  json: { \n    url,\n    chat_id,\n    message_id,\n    from_name\n  } \n}];"
+      },
+      "id": "00000000-0000-0000-0000-000000000003",
+      "name": "Extraer URL de Instagram",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [420, 360]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "cond-has-url",
+              "leftValue": "={{ $json.url }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        }
+      },
+      "id": "00000000-0000-0000-0000-000000000004",
+      "name": "¿Contiene URL de Instagram?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [640, 360]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "⏳ Descargando y transcribiendo el video de Instagram... Dame unos segundos.",
+        "additionalFields": {
+          "reply_to_message_id": "={{ $json.message_id }}"
+        }
+      },
+      "id": "00000000-0000-0000-0000-000000000005",
+      "name": "Enviar: Procesando",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [880, 220],
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "CronistaYT Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "❌ No encontré un link de Instagram en tu mensaje.\n\nComparte un link así:\n`https://www.instagram.com/reel/ABC123/`",
+        "additionalFields": {
+          "parse_mode": "Markdown",
+          "reply_to_message_id": "={{ $json.message_id }}"
+        }
+      },
+      "id": "00000000-0000-0000-0000-000000000006",
+      "name": "Error: No es Instagram",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [880, 520],
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "CronistaYT Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "https://instagram-scraper-api2.p.rapidapi.com/v1/post_info",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "code_or_id_or_url",
+              "value": "={{ $('Extraer URL de Instagram').item.json.url }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-RapidAPI-Key",
+              "value": "={{ $vars.RAPIDAPI_KEY }}"
+            },
+            {
+              "name": "X-RapidAPI-Host",
+              "value": "instagram-scraper-api2.p.rapidapi.com"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 30000
+        }
+      },
+      "id": "00000000-0000-0000-0000-000000000007",
+      "name": "Obtener Info de Instagram",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1100, 220],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Extraer URL de Instagram').item.json.chat_id }}",
+        "text": "❌ No pude acceder al video. El post puede ser privado, una historia o el link es inválido.",
+        "additionalFields": {
+          "reply_to_message_id": "={{ $('Extraer URL de Instagram').item.json.message_id }}"
+        }
+      },
+      "id": "00000000-0000-0000-0000-000000000008",
+      "name": "Error: Post inaccesible",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1320, 420],
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "CronistaYT Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\n\n// Handle multiple response structures from Instagram Scraper API\nlet videoUrl = null;\nconst items = data?.data?.items || data?.items || [];\nconst item = items[0] || data?.data || data;\n\n// Try each possible location for the video URL\nif (item?.video_url) {\n  videoUrl = item.video_url;\n} else if (item?.video_versions?.length > 0) {\n  videoUrl = item.video_versions[0]?.url;\n} else if (item?.carousel_media) {\n  for (const media of item.carousel_media) {\n    if (media.video_url) { videoUrl = media.video_url; break; }\n    if (media.video_versions?.[0]?.url) { videoUrl = media.video_versions[0].url; break; }\n  }\n}\n\nconst chat_id = $('Extraer URL de Instagram').item.json.chat_id;\nconst message_id = $('Extraer URL de Instagram').item.json.message_id;\n\nif (!videoUrl) {\n  throw new Error('No se encontró video. ¿Es una imagen o post privado?');\n}\n\nreturn [{ json: { videoUrl, chat_id, message_id } }];"
+      },
+      "id": "00000000-0000-0000-0000-000000000009",
+      "name": "Extraer URL del Video",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1320, 220],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Extraer URL de Instagram').item.json.chat_id }}",
+        "text": "❌ Este post no tiene video. Solo puedo transcribir Reels y videos, no imágenes.",
+        "additionalFields": {
+          "reply_to_message_id": "={{ $('Extraer URL de Instagram').item.json.message_id }}"
+        }
+      },
+      "id": "00000000-0000-0000-0000-000000000010",
+      "name": "Error: No hay video",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1540, 420],
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "CronistaYT Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.videoUrl }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "data"
+            }
+          },
+          "timeout": 90000
+        }
+      },
+      "id": "00000000-0000-0000-0000-000000000011",
+      "name": "Descargar Video",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1540, 220],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Extraer URL de Instagram').item.json.chat_id }}",
+        "text": "❌ No pude descargar el video. El enlace puede haber expirado. Intenta con el link de nuevo.",
+        "additionalFields": {
+          "reply_to_message_id": "={{ $('Extraer URL de Instagram').item.json.message_id }}"
+        }
+      },
+      "id": "00000000-0000-0000-0000-000000000012",
+      "name": "Error: Descarga fallida",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1760, 420],
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "CronistaYT Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.openai.com/v1/audio/transcriptions",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $vars.OPENAI_API_KEY }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "model",
+              "value": "whisper-1"
+            },
+            {
+              "name": "response_format",
+              "value": "json"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 180000
+        }
+      },
+      "id": "00000000-0000-0000-0000-000000000013",
+      "name": "Transcribir con Whisper",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1760, 220],
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Extraer URL de Instagram').item.json.chat_id }}",
+        "text": "❌ No pude transcribir el audio. El video puede no tener audio, ser demasiado largo (más de 25 MB) o el servicio no está disponible.",
+        "additionalFields": {
+          "reply_to_message_id": "={{ $('Extraer URL de Instagram').item.json.message_id }}"
+        }
+      },
+      "id": "00000000-0000-0000-0000-000000000014",
+      "name": "Error: Transcripción fallida",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [1980, 420],
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "CronistaYT Bot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const transcription = $input.first().json?.text || '';\n\nif (!transcription.trim()) {\n  throw new Error('Transcripción vacía');\n}\n\n// Telegram message limit is 4096 chars; we split if needed\nconst MAX_CHUNK = 3800;\nconst header = '📝 *Transcripción del video de Instagram:*\\n\\n';\nconst footer = '\\n\\n_Transcrito con Whisper AI_ 🤖';\n\nconst full = header + transcription + footer;\n\nif (full.length <= MAX_CHUNK) {\n  return [{ json: { text: full } }];\n}\n\n// Split long transcriptions into multiple messages\nconst words = transcription.split(' ');\nconst chunks = [];\nlet current = '';\n\nfor (const word of words) {\n  if ((current + ' ' + word).length > MAX_CHUNK) {\n    if (current) chunks.push(current.trim());\n    current = word;\n  } else {\n    current += (current ? ' ' : '') + word;\n  }\n}\nif (current.trim()) chunks.push(current.trim());\n\nreturn chunks.map((chunk, i) => ({\n  json: {\n    text: (i === 0 ? header : `📝 *...parte ${i + 1}/${chunks.length}:*\\n\\n`) +\n          chunk +\n          (i === chunks.length - 1 ? footer : '')\n  }\n}));"
+      },
+      "id": "00000000-0000-0000-0000-000000000015",
+      "name": "Formatear Transcripción",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1980, 220]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Extraer URL de Instagram').item.json.chat_id }}",
+        "text": "={{ $json.text }}",
+        "additionalFields": {
+          "parse_mode": "Markdown",
+          "reply_to_message_id": "={{ $('Extraer URL de Instagram').item.json.message_id }}"
+        }
+      },
+      "id": "00000000-0000-0000-0000-000000000016",
+      "name": "Enviar Transcripción",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [2200, 220],
+      "credentials": {
+        "telegramApi": {
+          "id": "1",
+          "name": "CronistaYT Bot"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Extraer URL de Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer URL de Instagram": {
+      "main": [
+        [
+          {
+            "node": "¿Contiene URL de Instagram?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "¿Contiene URL de Instagram?": {
+      "main": [
+        [
+          {
+            "node": "Enviar: Procesando",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error: No es Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar: Procesando": {
+      "main": [
+        [
+          {
+            "node": "Obtener Info de Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Obtener Info de Instagram": {
+      "main": [
+        [
+          {
+            "node": "Extraer URL del Video",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error: Post inaccesible",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extraer URL del Video": {
+      "main": [
+        [
+          {
+            "node": "Descargar Video",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error: No hay video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Descargar Video": {
+      "main": [
+        [
+          {
+            "node": "Transcribir con Whisper",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error: Descarga fallida",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribir con Whisper": {
+      "main": [
+        [
+          {
+            "node": "Formatear Transcripción",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error: Transcripción fallida",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatear Transcripción": {
+      "main": [
+        [
+          {
+            "node": "Enviar Transcripción",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "staticData": null,
+  "meta": {
+    "templateCredsSetupCompleted": false
+  },
+  "pinData": {},
+  "tags": [
+    { "name": "telegram" },
+    { "name": "instagram" },
+    { "name": "transcripcion" },
+    { "name": "whisper" },
+    { "name": "CronistaYT" }
+  ]
+}
