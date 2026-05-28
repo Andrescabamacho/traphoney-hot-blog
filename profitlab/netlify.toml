@@ -1,0 +1,45 @@
+[build]
+  base    = "profitlab"
+  publish = "frontend/dist"
+  command = "cd frontend && npm install && npm run build"
+
+[functions]
+  directory    = "netlify/functions"
+  node_bundler = "esbuild"
+
+# ── API → Serverless functions ──────────────────────────────────
+[[redirects]]
+  from   = "/api/generate"
+  to     = "/.netlify/functions/generate"
+  status = 200
+  force  = true
+
+[[redirects]]
+  from   = "/api/chat"
+  to     = "/.netlify/functions/chat"
+  status = 200
+  force  = true
+
+[[redirects]]
+  from   = "/api/ideas"
+  to     = "/.netlify/functions/ideas"
+  status = 200
+  force  = true
+
+[[redirects]]
+  from   = "/api/instagram/reels"
+  to     = "/.netlify/functions/reels"
+  status = 200
+  force  = true
+
+[[redirects]]
+  from   = "/api/health"
+  to     = "/.netlify/functions/health"
+  status = 200
+  force  = true
+
+# ── SPA fallback — todas las rutas → index.html ─────────────────
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
