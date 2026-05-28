@@ -1,12 +1,12 @@
 'use client'
 
-import { useEffect, useRef, useCallback, useState } from 'react'
+import React, { useEffect, useRef, useCallback, useState } from 'react'
 
 const COLS = 10
 const ROWS = 20
 const BLOCK = 36
 
-const COLORS = {
+const COLORS: Record<string, string> = {
   I: '#00F5FF',
   O: '#FFE000',
   T: '#CC00FF',
@@ -46,7 +46,10 @@ const PIECES: Record<string, number[][]> = {
 
 const PIECE_NAMES = Object.keys(PIECES)
 
-function randomPiece() {
+type Board = (string | null)[][]
+type Piece = { name: string; shape: number[][]; x: number; y: number }
+
+function randomPiece(): Piece {
   const name = PIECE_NAMES[Math.floor(Math.random() * PIECE_NAMES.length)]
   return { name, shape: PIECES[name], x: Math.floor(COLS / 2) - 1, y: 0 }
 }
@@ -55,7 +58,7 @@ function rotate(shape: number[][]): number[][] {
   return shape[0].map((_, i) => shape.map((row) => row[i]).reverse())
 }
 
-function fits(board: (string | null)[][], shape: number[][], x: number, y: number) {
+function fits(board: Board, shape: number[][], x: number, y: number): boolean {
   for (let r = 0; r < shape.length; r++) {
     for (let c = 0; c < shape[r].length; c++) {
       if (!shape[r][c]) continue
@@ -68,7 +71,7 @@ function fits(board: (string | null)[][], shape: number[][], x: number, y: numbe
   return true
 }
 
-function place(board: (string | null)[][], shape: number[][], x: number, y: number, color: string) {
+function place(board: Board, shape: number[][], x: number, y: number, color: string): Board {
   const nb = board.map((r) => [...r])
   for (let r = 0; r < shape.length; r++) {
     for (let c = 0; c < shape[r].length; c++) {
@@ -78,11 +81,32 @@ function place(board: (string | null)[][], shape: number[][], x: number, y: numb
   return nb
 }
 
-function clearLines(board: (string | null)[][]) {
+function clearLines(board: Board): { board: Board; cleared: number } {
   const newBoard = board.filter((row) => row.some((cell) => !cell))
   const cleared = ROWS - newBoard.length
-  const empty: (string | null)[][] = Array.from({ length: cleared }, () => Array(COLS).fill(null))
+  const empty: Board = Array.from({ length: cleared }, () => Array(COLS).fill(null))
   return { board: [...empty, ...newBoard], cleared }
+}
+
+function hexToRgb(hex: string): string {
+  const r = parseInt(hex.slice(1, 3), 16)
+  const g = parseInt(hex.slice(3, 5), 16)
+  const b = parseInt(hex.slice(5, 7), 16)
+  return `${r},${g},${b}`
+}
+
+function lighten(hex: string, amount: number): string {
+  const r = Math.min(255, parseInt(hex.slice(1, 3), 16) + amount)
+  const g = Math.min(255, parseInt(hex.slice(3, 5), 16) + amount)
+  const b = Math.min(255, parseInt(hex.slice(5, 7), 16) + amount)
+  return `rgb(${r},${g},${b})`
+}
+
+function darken(hex: string, amount: number): string {
+  const r = Math.max(0, parseInt(hex.slice(1, 3), 16) - amount)
+  const g = Math.max(0, parseInt(hex.slice(3, 5), 16) - amount)
+  const b = Math.max(0, parseInt(hex.slice(5, 7), 16) - amount)
+  return `rgb(${r},${g},${b})`
 }
 
 export default function TetrisPage() {
@@ -96,7 +120,7 @@ export default function TetrisPage() {
   const [started, setStarted] = useState(false)
 
   const stateRef = useRef({
-    board: Array.from({ length: ROWS }, () => Array(COLS).fill(null)) as (string | null)[][],
+    board: Array.from({ length: ROWS }, () => Array(COLS).fill(null)) as Board,
     current: randomPiece(),
     next: randomPiece(),
     score: 0,
@@ -115,7 +139,6 @@ export default function TetrisPage() {
       const px = x * BLOCK
       const py = y * BLOCK
       const s = BLOCK - 2
-
       if (ghost) {
         ctx.globalAlpha = 0.2
         ctx.fillStyle = color
@@ -123,25 +146,17 @@ export default function TetrisPage() {
         ctx.globalAlpha = 1
         return
       }
-
-      // Shadow
       ctx.fillStyle = 'rgba(0,0,0,0.4)'
       ctx.fillRect(px + 4, py + 4, s, s)
-
-      // Main block
       const grad = ctx.createLinearGradient(px, py, px + s, py + s)
       grad.addColorStop(0, lighten(color, 40))
       grad.addColorStop(0.5, color)
       grad.addColorStop(1, darken(color, 40))
       ctx.fillStyle = grad
       ctx.fillRect(px + 1, py + 1, s, s)
-
-      // Top-left highlight
       ctx.fillStyle = 'rgba(255,255,255,0.35)'
       ctx.fillRect(px + 1, py + 1, s, 5)
       ctx.fillRect(px + 1, py + 1, 5, s)
-
-      // Bottom-right shadow
       ctx.fillStyle = 'rgba(0,0,0,0.3)'
       ctx.fillRect(px + 1, py + s - 4, s, 5)
       ctx.fillRect(px + s - 4, py + 1, 5, s)
@@ -150,12 +165,9 @@ export default function TetrisPage() {
   )
 
   const drawBoard = useCallback(
-    (ctx: CanvasRenderingContext2D, board: (string | null)[][]) => {
-      // Background
+    (ctx: CanvasRenderingContext2D, board: Board) => {
       ctx.fillStyle = '#0a0a1a'
       ctx.fillRect(0, 0, COLS * BLOCK, ROWS * BLOCK)
-
-      // Grid lines
       ctx.strokeStyle = 'rgba(255,255,255,0.04)'
       ctx.lineWidth = 1
       for (let c = 0; c <= COLS; c++) {
@@ -170,43 +182,30 @@ export default function TetrisPage() {
         ctx.lineTo(COLS * BLOCK, r * BLOCK)
         ctx.stroke()
       }
-
-      // Placed blocks
       for (let r = 0; r < ROWS; r++) {
         for (let c = 0; c < COLS; c++) {
-          if (board[r][c]) drawBlock(ctx, c, r, board[r][c]!)
+          if (board[r][c]) drawBlock(ctx, c, r, board[r][c] as string)
         }
       }
     },
     [drawBlock]
   )
 
-  const getGhostY = useCallback(
-    (board: (string | null)[][], shape: number[][], x: number, y: number) => {
-      let gy = y
-      while (fits(board, shape, x, gy + 1)) gy++
-      return gy
-    },
-    []
-  )
+  const getGhostY = useCallback((board: Board, shape: number[][], x: number, y: number): number => {
+    let gy = y
+    while (fits(board, shape, x, gy + 1)) gy++
+    return gy
+  }, [])
 
   const drawPiece = useCallback(
-    (
-      ctx: CanvasRenderingContext2D,
-      board: (string | null)[][],
-      piece: { name: string; shape: number[][]; x: number; y: number }
-    ) => {
-      const color = COLORS[piece.name as keyof typeof COLORS]
+    (ctx: CanvasRenderingContext2D, board: Board, piece: Piece) => {
+      const color = COLORS[piece.name]
       const gy = getGhostY(board, piece.shape, piece.x, piece.y)
-
-      // Ghost
       if (gy !== piece.y) {
         for (let r = 0; r < piece.shape.length; r++)
           for (let c = 0; c < piece.shape[r].length; c++)
             if (piece.shape[r][c]) drawBlock(ctx, piece.x + c, gy + r, color, true)
       }
-
-      // Active piece
       for (let r = 0; r < piece.shape.length; r++)
         for (let c = 0; c < piece.shape[r].length; c++)
           if (piece.shape[r][c]) drawBlock(ctx, piece.x + c, piece.y + r, color)
@@ -215,10 +214,10 @@ export default function TetrisPage() {
   )
 
   const drawNext = useCallback(
-    (ctx: CanvasRenderingContext2D, piece: { name: string; shape: number[][] }) => {
+    (ctx: CanvasRenderingContext2D, piece: Piece) => {
       ctx.fillStyle = '#0a0a1a'
       ctx.fillRect(0, 0, 5 * BLOCK, 5 * BLOCK)
-      const color = COLORS[piece.name as keyof typeof COLORS]
+      const color = COLORS[piece.name]
       const offX = Math.floor((4 - piece.shape[0].length) / 2)
       const offY = Math.floor((4 - piece.shape.length) / 2)
       for (let r = 0; r < piece.shape.length; r++)
@@ -231,20 +230,16 @@ export default function TetrisPage() {
   const tick = useCallback(() => {
     const s = stateRef.current
     if (s.gameOver || s.paused || !s.started) return
-
     const now = performance.now()
     if (now - s.lastDrop < s.dropInterval) return
-
     s.lastDrop = now
-
     const { current, board } = s
     if (fits(board, current.shape, current.x, current.y + 1)) {
       s.current = { ...current, y: current.y + 1 }
     } else {
-      const placed = place(board, current.shape, current.x, current.y, COLORS[current.name as keyof typeof COLORS])
+      const placed = place(board, current.shape, current.x, current.y, COLORS[current.name])
       const { board: newBoard, cleared } = clearLines(placed)
       s.board = newBoard
-
       if (cleared) {
         const pts = [0, 100, 300, 500, 800][cleared] * s.level
         s.score += pts
@@ -255,10 +250,8 @@ export default function TetrisPage() {
         setLines(s.lines)
         setLevel(s.level)
       }
-
       s.current = s.next
       s.next = randomPiece()
-
       if (!fits(s.board, s.current.shape, s.current.x, s.current.y)) {
         s.gameOver = true
         setGameOver(true)
@@ -273,21 +266,17 @@ export default function TetrisPage() {
     const ctx = canvas.getContext('2d')
     const nctx = nextCanvas.getContext('2d')
     if (!ctx || !nctx) return
-
     const s = stateRef.current
     drawBoard(ctx, s.board)
     if (s.started && !s.gameOver) drawPiece(ctx, s.board, s.current)
     drawNext(nctx, s.next)
   }, [drawBoard, drawPiece, drawNext])
 
-  const loop = useCallback(
-    (ts: number) => {
-      tick()
-      render()
-      stateRef.current.animFrame = requestAnimationFrame(loop)
-    },
-    [tick, render]
-  )
+  const loop = useCallback(() => {
+    tick()
+    render()
+    stateRef.current.animFrame = requestAnimationFrame(loop)
+  }, [tick, render])
 
   useEffect(() => {
     stateRef.current.animFrame = requestAnimationFrame(loop)
@@ -334,7 +323,7 @@ export default function TetrisPage() {
 
   const startGame = useCallback(() => {
     const s = stateRef.current
-    s.board = Array.from({ length: ROWS }, () => Array(COLS).fill(null))
+    s.board = Array.from({ length: ROWS }, () => Array(COLS).fill(null)) as Board
     s.current = randomPiece()
     s.next = randomPiece()
     s.score = 0
@@ -414,7 +403,6 @@ export default function TetrisPage() {
         padding: '20px',
       }}
     >
-      {/* Title */}
       <div
         style={{
           fontSize: '3rem',
@@ -424,7 +412,6 @@ export default function TetrisPage() {
           background: 'linear-gradient(90deg, #00f5ff, #cc00ff, #ff8800)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
-          textShadow: 'none',
           filter: 'drop-shadow(0 0 20px rgba(0,245,255,0.5))',
         }}
       >
@@ -432,7 +419,6 @@ export default function TetrisPage() {
       </div>
 
       <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
-        {/* Game board */}
         <div style={{ position: 'relative' }}>
           <canvas
             ref={canvasRef}
@@ -445,8 +431,6 @@ export default function TetrisPage() {
               boxShadow: '0 0 30px rgba(0,245,255,0.2), inset 0 0 30px rgba(0,0,0,0.5)',
             }}
           />
-
-          {/* Overlay: start / game over / pause */}
           {(!started || gameOver || paused) && (
             <div
               style={{
@@ -466,7 +450,9 @@ export default function TetrisPage() {
               )}
               {gameOver && (
                 <>
-                  <div style={{ fontSize: '2rem', color: '#FF2244', fontWeight: 700 }}>GAME OVER</div>
+                  <div style={{ fontSize: '2rem', color: '#FF2244', fontWeight: 700 }}>
+                    GAME OVER
+                  </div>
                   <div style={{ fontSize: '1.2rem', color: '#fff' }}>
                     Puntos: <strong style={{ color: '#00f5ff' }}>{score}</strong>
                   </div>
@@ -476,6 +462,7 @@ export default function TetrisPage() {
                 <div style={{ fontSize: '1.8rem', color: '#00f5ff', fontWeight: 700 }}>TETRIS</div>
               )}
               <button
+                type="button"
                 onClick={started && !gameOver ? togglePause : startGame}
                 style={{
                   marginTop: '8px',
@@ -497,9 +484,7 @@ export default function TetrisPage() {
           )}
         </div>
 
-        {/* Side panel */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', minWidth: '140px' }}>
-          {/* Next piece */}
           <Panel title="SIGUIENTE">
             <canvas
               ref={nextCanvasRef}
@@ -508,20 +493,15 @@ export default function TetrisPage() {
               style={{ display: 'block', borderRadius: '4px' }}
             />
           </Panel>
-
           <Panel title="PUNTOS">
             <span style={{ fontSize: '1.6rem', fontWeight: 700, color: '#00f5ff' }}>{score}</span>
           </Panel>
-
           <Panel title="NIVEL">
             <span style={{ fontSize: '1.6rem', fontWeight: 700, color: '#FFE000' }}>{level}</span>
           </Panel>
-
           <Panel title="LÍNEAS">
             <span style={{ fontSize: '1.6rem', fontWeight: 700, color: '#00FF88' }}>{lines}</span>
           </Panel>
-
-          {/* Controls */}
           <Panel title="CONTROLES">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
               {[
@@ -545,14 +525,17 @@ export default function TetrisPage() {
                   >
                     {key}
                   </kbd>
-                  <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)' }}>{action}</span>
+                  <span style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)' }}>
+                    {action}
+                  </span>
                 </div>
               ))}
             </div>
           </Panel>
 
-          {/* Mobile buttons */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px', marginTop: '4px' }}>
+          <div
+            style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '6px', marginTop: '4px' }}
+          >
             <div />
             <MobileBtn onClick={rotatePiece} label="↑" color="#CC00FF" />
             <div />
@@ -565,6 +548,7 @@ export default function TetrisPage() {
           </div>
 
           <button
+            type="button"
             onClick={togglePause}
             style={{
               padding: '8px',
@@ -598,7 +582,14 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
         gap: '6px',
       }}
     >
-      <div style={{ fontSize: '0.65rem', letterSpacing: '0.15em', color: 'rgba(255,255,255,0.4)', fontWeight: 700 }}>
+      <div
+        style={{
+          fontSize: '0.65rem',
+          letterSpacing: '0.15em',
+          color: 'rgba(255,255,255,0.4)',
+          fontWeight: 700,
+        }}
+      >
         {title}
       </div>
       {children}
@@ -617,6 +608,7 @@ function MobileBtn({
 }) {
   return (
     <button
+      type="button"
       onTouchStart={(e) => {
         e.preventDefault()
         onClick()
@@ -636,25 +628,4 @@ function MobileBtn({
       {label}
     </button>
   )
-}
-
-function hexToRgb(hex: string) {
-  const r = parseInt(hex.slice(1, 3), 16)
-  const g = parseInt(hex.slice(3, 5), 16)
-  const b = parseInt(hex.slice(5, 7), 16)
-  return `${r},${g},${b}`
-}
-
-function lighten(hex: string, amount: number) {
-  const r = Math.min(255, parseInt(hex.slice(1, 3), 16) + amount)
-  const g = Math.min(255, parseInt(hex.slice(3, 5), 16) + amount)
-  const b = Math.min(255, parseInt(hex.slice(5, 7), 16) + amount)
-  return `rgb(${r},${g},${b})`
-}
-
-function darken(hex: string, amount: number) {
-  const r = Math.max(0, parseInt(hex.slice(1, 3), 16) - amount)
-  const g = Math.max(0, parseInt(hex.slice(3, 5), 16) - amount)
-  const b = Math.max(0, parseInt(hex.slice(5, 7), 16) - amount)
-  return `rgb(${r},${g},${b})`
 }
