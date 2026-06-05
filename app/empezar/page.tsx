@@ -9,10 +9,10 @@ export const metadata = genPageMetadata({
 //  👇  REEMPLAZA ESTOS LINKS POR LOS TUYOS REALES
 // ─────────────────────────────────────────────────────────────
 const LINKS = {
-  discord: 'https://discord.gg/TU-INVITACION', // 👈 Link de invitación a tu Discord
-  whop: 'https://whop.com/TU-PRODUCTO', // 👈 Link de tu Whop
+  discord: 'https://discord.gg/hu8VjjYCS', // 👈 Link de invitación a tu Discord
+  whop: 'https://whop.com/profit-lab-b584?a=cabamacho', // 👈 Link de tu Whop
   magnific: 'https://magnific.ai/', // 👈 Link directo a Magnific (plan PREMIUM+)
-  formacion: 'https://discord.gg/TU-INVITACION', // 👈 Link a la formación grabada (o déjalo apuntando a Discord)
+  formacion: 'https://discord.gg/hu8VjjYCS', // 👈 Link a la formación grabada (de momento apunta a Discord)
 }
 // ─────────────────────────────────────────────────────────────
 
