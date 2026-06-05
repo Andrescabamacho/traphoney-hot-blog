@@ -11,8 +11,9 @@ export const metadata = genPageMetadata({
 const LINKS = {
   discord: 'https://discord.gg/hu8VjjYCS', // 👈 Link de invitación a tu Discord
   whop: 'https://whop.com/profit-lab-b584?a=cabamacho', // 👈 Link de tu Whop
-  magnific: 'https://magnific.ai/', // 👈 Link directo a Magnific (plan PREMIUM+)
-  formacion: 'https://discord.gg/hu8VjjYCS', // 👈 Link a la formación grabada (de momento apunta a Discord)
+  magnific:
+    'https://app.notion.com/p/Afiliado-3683f2b7892280d89ed5cdf6558df8a6?source=copy_link#3763f2b7892280528ed3d7f906d7b072', // 👈 Suscripción Magnific (afiliado, plan PREMIUM+)
+  formacion: 'https://whop.com/profit-lab-b584?a=cabamacho', // 👈 Formación grabada (alojada en Whop)
 }
 // ─────────────────────────────────────────────────────────────
 
