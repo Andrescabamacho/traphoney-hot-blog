@@ -61,13 +61,13 @@
         margin: 14px auto 0;
       }
 
-      ol.steps { list-style: none; margin: 34px 0 0; padding: 0; }
+      ol.steps { list-style: none; margin: 40px 0 0; padding: 0; }
       .step {
         background: var(--card);
         border: 1px solid rgba(120, 110, 160, 0.08);
         border-radius: var(--radius);
-        padding: 26px 26px 24px;
-        margin-bottom: 16px;
+        padding: 28px 28px 26px;
+        margin-bottom: 26px;
         box-shadow: 0 18px 40px -28px rgba(60, 50, 120, 0.4);
         display: flex;
         gap: 18px;
@@ -96,6 +96,27 @@
       }
       .step p { color: var(--body); font-size: 16px; margin: 0; }
       .step p strong { color: var(--ink); font-weight: 650; }
+
+      .clicks { list-style: none; margin: 16px 0 0; padding: 0; }
+      .clicks li {
+        position: relative;
+        padding-left: 24px;
+        margin: 11px 0;
+        color: var(--body);
+        font-size: 15.5px;
+      }
+      .clicks li::before {
+        content: "";
+        position: absolute;
+        left: 5px;
+        top: 9px;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--accent);
+        opacity: 0.55;
+      }
+      .clicks li strong { color: var(--ink); font-weight: 650; }
 
       .next {
         display: inline-block;
@@ -133,13 +154,17 @@
           <div class="grow">
             <h2>Entra en Whop y mira la formación</h2>
             <p>
-              Whop es tu <strong>panel privado</strong>: inicia sesión con el
-              <strong>mismo correo del pago</strong>. Dentro está tu <strong>formación grabada</strong>,
-              y ese es tu <strong>primer paso de verdad</strong>. En ella aprendes cómo funciona el
-              juego: la <strong>psicología</strong> que hace que un contenido se vuelva viral y,
-              sobre todo, cómo <strong>monetizarlo</strong> (viralizar sin ganar dinero no sirve de
-              nada). Incluye casos prácticos para empezar desde ya.
+              Whop es tu <strong>panel privado</strong> y dentro está tu <strong>formación
+              grabada</strong>: tu <strong>primer paso de verdad</strong>. Aquí aprendes la
+              <strong>psicología</strong> para hacer contenido viral y, sobre todo, cómo
+              <strong>monetizarlo</strong> (con casos prácticos para empezar ya).
             </p>
+            <ul class="clicks">
+              <li>Haz clic en <strong>“Abrir Whop”</strong>.</li>
+              <li>Inicia sesión con el <strong>mismo correo del pago</strong>.</li>
+              <li>Entra en la sección de <strong>formación</strong>.</li>
+              <li>Mira los vídeos <strong>en orden</strong>, de principio a fin.</li>
+            </ul>
             <a class="next" href="https://whop.com/profit-lab-b584?a=cabamacho" target="_blank" rel="noopener">Abrir Whop →</a>
           </div>
         </li>
@@ -149,12 +174,16 @@
           <div class="grow">
             <h2>Activa Magnific</h2>
             <p>
-              Nuestro sistema funciona <strong>dentro de Magnific</strong>, así que necesitas su
-              plan <strong>PREMIUM+ (40&nbsp;€/mes)</strong>. Con él tendrás imágenes y vídeos
-              prácticamente ilimitados. <strong>Importante:</strong> elige el pago
-              <strong>mensual</strong>, nunca el anual — la inteligencia artificial avanza muy
-              rápido y no conviene atarse un año entero.
+              Nuestro sistema funciona <strong>dentro de Magnific</strong>. Con su plan
+              <strong>PREMIUM+ (40&nbsp;€/mes)</strong> tendrás imágenes y vídeos prácticamente
+              ilimitados.
             </p>
+            <ul class="clicks">
+              <li>Haz clic en <strong>“Activar Magnific”</strong>.</li>
+              <li>Crea tu cuenta (si aún no la tienes).</li>
+              <li>Elige el plan <strong>PREMIUM+ (40&nbsp;€/mes)</strong>.</li>
+              <li>Selecciona el pago <strong>MENSUAL</strong>, nunca el anual — la IA avanza muy rápido y no conviene atarse un año.</li>
+            </ul>
             <a class="next" href="https://app.notion.com/p/Afiliado-3683f2b7892280d89ed5cdf6558df8a6?source=copy_link#3763f2b7892280528ed3d7f906d7b072" target="_blank" rel="noopener">Activar Magnific →</a>
           </div>
         </li>
@@ -166,9 +195,13 @@
             <p>
               Cuando ya tengas la formación, entra en el Discord. Ahí la <strong>comunidad te
               asesora</strong> y resuelve tus dudas, y nosotros te abriremos un
-              <strong>ticket privado</strong>: un canal solo para ti para que puedas hablar
-              directamente conmigo.
+              <strong>ticket privado</strong> para hablar directamente conmigo.
             </p>
+            <ul class="clicks">
+              <li>Haz clic en <strong>“Abrir Discord”</strong> y acepta la invitación.</li>
+              <li>Preséntate en la comunidad y pregunta lo que necesites.</li>
+              <li>Nosotros te abriremos tu <strong>ticket privado</strong>.</li>
+            </ul>
             <a class="next" href="https://discord.gg/hu8VjjYCS" target="_blank" rel="noopener">Abrir Discord →</a>
           </div>
         </li>
@@ -178,10 +211,14 @@
           <div class="grow">
             <h2>Pide el sistema</h2>
             <p>
-              Cuando termines la formación, pídenos <strong>el sistema</strong> por tu
-              <strong>ticket privado de Discord</strong>. Te enviamos ahí mismo el acceso para que
+              Cuando termines la formación, te damos acceso a <strong>el sistema</strong> para que
               empieces a usarlo.
             </p>
+            <ul class="clicks">
+              <li>Ve a tu <strong>ticket privado de Discord</strong>.</li>
+              <li>Escríbenos pidiendo <strong>el sistema</strong>.</li>
+              <li>Te enviamos ahí mismo el <strong>acceso</strong>.</li>
+            </ul>
           </div>
         </li>
 
@@ -190,10 +227,14 @@
           <div class="grow">
             <h2>Empieza a crear</h2>
             <p>
-              Ya lo tienes todo. Abre <strong>Magnific</strong> y ponte a crear: puedes usar
-              nuestro sistema tal cual o crear tus propias ideas. La formación ya te ha enseñado a
-              usar cada herramienta. A por ello.
+              Ya lo tienes todo. La formación ya te ha enseñado a usar cada herramienta, así que
+              ahora toca <strong>crear y monetizar</strong>.
             </p>
+            <ul class="clicks">
+              <li>Abre <strong>Magnific</strong> con el sistema.</li>
+              <li>Crea imágenes y vídeos: usa el sistema tal cual o tus propias ideas.</li>
+              <li>Publica tu contenido y empieza a <strong>monetizar</strong>. 🚀</li>
+            </ul>
           </div>
         </li>
       </ol>
