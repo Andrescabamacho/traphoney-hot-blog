@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Empieza aquí | Academia</title>
+    <meta
+      name="description"
+      content="Tu guía paso a paso para arrancar en la Academia. Todo lo que necesitas en un solo sitio."
+    />
+    <style>
+      :root {
+        --primary: #e6007a;
+        --primary-dark: #c20066;
+        --ink: #111827;
+        --muted: #4b5563;
+        --soft: #6b7280;
+        --line: #e5e7eb;
+        --bg: #f7f7f9;
+        --card: #ffffff;
+      }
+      * { box-sizing: border-box; }
+      html { -webkit-text-size-adjust: 100%; }
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica,
+          Arial, sans-serif;
+        color: var(--ink);
+        background: var(--bg);
+        line-height: 1.6;
+      }
+      .wrap { max-width: 760px; margin: 0 auto; padding: 0 18px 64px; }
+
+      /* Hero */
+      .hero { text-align: center; padding: 48px 0 24px; }
+      .badge {
+        display: inline-block;
+        background: rgba(230, 0, 122, 0.1);
+        color: var(--primary);
+        font-weight: 700;
+        font-size: 14px;
+        padding: 7px 16px;
+        border-radius: 999px;
+      }
+      .hero h1 {
+        font-size: 40px;
+        line-height: 1.1;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin: 20px 0 0;
+      }
+      .hero p { font-size: 18px; color: var(--muted); max-width: 540px; margin: 16px auto 0; }
+
+      /* Steps */
+      ol.steps { list-style: none; margin: 8px 0 0; padding: 0; }
+      .step {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 24px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+        display: flex;
+        gap: 16px;
+        align-items: flex-start;
+      }
+      .num {
+        flex: 0 0 auto;
+        width: 46px;
+        height: 46px;
+        border-radius: 999px;
+        background: var(--primary);
+        color: #fff;
+        font-weight: 800;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .step h2 { font-size: 21px; font-weight: 800; margin: 2px 0 6px; }
+      .step .body { color: #374151; }
+      .step .body ul { margin: 10px 0 0; padding-left: 4px; list-style: none; }
+      .step .body li { margin: 8px 0; }
+      .step .body p { margin: 12px 0 0; }
+      .grow { min-width: 0; flex: 1; }
+
+      .warn {
+        margin-top: 16px;
+        border: 2px solid #fbbf24;
+        background: #fffbeb;
+        color: #78350f;
+        border-radius: 14px;
+        padding: 14px 16px;
+      }
+      .small { font-size: 14px; color: var(--soft); margin-top: 12px; }
+
+      .cta {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 18px;
+        background: var(--primary);
+        color: #fff;
+        text-decoration: none;
+        font-weight: 700;
+        padding: 13px 22px;
+        border-radius: 14px;
+        box-shadow: 0 2px 8px rgba(230, 0, 122, 0.25);
+        transition: background 0.15s ease;
+      }
+      .cta:hover { background: var(--primary-dark); }
+
+      /* Resumen */
+      .summary {
+        margin-top: 40px;
+        background: #f3f4f6;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 28px;
+      }
+      .summary h3 { margin: 0 0 12px; font-size: 18px; }
+      .summary ol { margin: 0; padding-left: 20px; color: #374151; }
+      .summary ol li { margin: 6px 0; }
+      .summary .help { text-align: center; color: var(--muted); margin: 20px 0 0; }
+
+      @media (max-width: 480px) {
+        .hero h1 { font-size: 32px; }
+        .step { padding: 20px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <!-- Hero -->
+      <header class="hero">
+        <span class="badge">✅ Pago confirmado — ¡Bienvenido/a!</span>
+        <h1>Empieza aquí 👇</h1>
+        <p>
+          Sigue estos <strong>6 pasos en orden</strong>. Es facilísimo: solo tienes que ir
+          tocando cada botón. En menos de 10 minutos lo tendrás todo listo. 🎯
+        </p>
+      </header>
+
+      <!-- Steps -->
+      <ol class="steps">
+        <!-- 1 -->
+        <li class="step">
+          <div class="num">1</div>
+          <div class="grow">
+            <h2>💬 Únete al Discord</h2>
+            <div class="body">
+              Es el corazón de la comunidad. Ahí tendrás <strong>todo</strong>: avisos, soporte
+              y tu <strong>ticket privado</strong> (un canal solo para ti que creamos nosotros).
+              <br />👉 Haz clic, acepta la invitación y ¡listo!
+            </div>
+            <a class="cta" href="https://discord.gg/hu8VjjYCS" target="_blank" rel="noopener">
+              Entrar al Discord →
+            </a>
+          </div>
+        </li>
+
+        <!-- 2 -->
+        <li class="step">
+          <div class="num">2</div>
+          <div class="grow">
+            <h2>🛒 Entra en tu Whop</h2>
+            <div class="body">
+              Whop es tu <strong>panel privado</strong>. Es muy fácil:
+              <ul>
+                <li>1️⃣ Haz clic en el botón de abajo.</li>
+                <li>2️⃣ Inicia sesión con el mismo correo del pago.</li>
+                <li>3️⃣ Dentro verás los accesos y materiales. Solo tienes que ir tocando cada apartado. 😉</li>
+              </ul>
+            </div>
+            <a
+              class="cta"
+              href="https://whop.com/profit-lab-b584?a=cabamacho"
+              target="_blank"
+              rel="noopener"
+            >
+              Abrir mi Whop →
+            </a>
+          </div>
+        </li>
+
+        <!-- 3 -->
+        <li class="step">
+          <div class="num">3</div>
+          <div class="grow">
+            <h2>🤖 Activa Magnific (nuestro sistema vive aquí)</h2>
+            <div class="body">
+              Nuestro sistema funciona <strong>dentro de Magnific</strong>. Necesitas su
+              suscripción de <strong>40&nbsp;€/mes</strong> con el plan <strong>PREMIUM+</strong>.
+              <br />
+              Con ese plan tendrás contenido <strong>prácticamente ilimitado</strong> para crear
+              imágenes y vídeos con nuestro sistema. 🎨🎬
+              <div class="warn">
+                ⚠️ <strong>MUY IMPORTANTE:</strong> elige el pago <strong>MENSUAL</strong>, NO el
+                anual. La inteligencia artificial avanza superrápido y no quieres quedarte atado
+                a un plan viejo.
+              </div>
+              <p class="small">
+                ¿Aún no te has registrado? Usa el botón de abajo (te llevamos directo).
+              </p>
+            </div>
+            <a
+              class="cta"
+              href="https://app.notion.com/p/Afiliado-3683f2b7892280d89ed5cdf6558df8a6?source=copy_link#3763f2b7892280528ed3d7f906d7b072"
+              target="_blank"
+              rel="noopener"
+            >
+              Ir a Magnific (PREMIUM+ mensual) →
+            </a>
+          </div>
+        </li>
+
+        <!-- 4 -->
+        <li class="step">
+          <div class="num">4</div>
+          <div class="grow">
+            <h2>🎓 Ve la formación grabada (tu PRIMER paso real)</h2>
+            <div class="body">
+              Antes de tocar nada, mira la formación. Aquí entiendes
+              <strong>cómo funciona el juego</strong>:
+              <ul>
+                <li>🧠 La <strong>psicología humana</strong> para crear contenido que se hace viral.</li>
+                <li>💸 Cómo <strong>monetizar</strong> ese contenido (de nada sirve viralizar si no ganas dinero).</li>
+                <li>🚀 <strong>Casos de uso prácticos</strong> para empezar a monetizar YA.</li>
+              </ul>
+              <p>Cuando termines la formación, lo vas a entender <strong>todo</strong>. 💪</p>
+            </div>
+            <a
+              class="cta"
+              href="https://whop.com/profit-lab-b584?a=cabamacho"
+              target="_blank"
+              rel="noopener"
+            >
+              Ver la formación →
+            </a>
+          </div>
+        </li>
+
+        <!-- 5 -->
+        <li class="step">
+          <div class="num">5</div>
+          <div class="grow">
+            <h2>🔑 Pide el SISTEMA por tu ticket privado</h2>
+            <div class="body">
+              Cuando ya hayas visto la formación, pídenos <strong>el sistema</strong> por tu
+              <strong> ticket privado de Discord</strong>. Te enviamos ahí mismo el link para que
+              empieces a usarlo. ✅
+            </div>
+          </div>
+        </li>
+
+        <!-- 6 -->
+        <li class="step">
+          <div class="num">6</div>
+          <div class="grow">
+            <h2>🔥 Empieza a crear contenido</h2>
+            <div class="body">
+              Ya tienes todo. Abre <strong>Magnific</strong> y a crear:
+              <ul>
+                <li>✨ Usa nuestro <strong>sistema</strong> tal cual.</li>
+                <li>🎨 O crea <strong>cosas nuevas</strong> tú mismo.</li>
+              </ul>
+              <p>
+                Para eso está la formación: para que sepas usar <strong>cada herramienta</strong>.
+                ¡A por ello! 🚀
+              </p>
+            </div>
+          </div>
+        </li>
+      </ol>
+
+      <!-- Resumen -->
+      <section class="summary">
+        <h3>📌 Resumen para que no te pierdas</h3>
+        <ol>
+          <li>Discord → comunidad + tu ticket privado.</li>
+          <li>Whop → tu panel, inicia sesión y explora.</li>
+          <li>Magnific PREMIUM+ → 40&nbsp;€/mes (MENSUAL, nunca anual).</li>
+          <li>Mira la formación grabada (psicología + monetización).</li>
+          <li>Pide el sistema por tu ticket privado de Discord.</li>
+          <li>¡A crear contenido y monetizar! 🔥</li>
+        </ol>
+        <p class="help">
+          ¿Dudas? Escríbenos por tu <strong>ticket privado de Discord</strong>. Estamos para
+          ayudarte. 🤝
+        </p>
+      </section>
+    </div>
+  </body>
+</html>
