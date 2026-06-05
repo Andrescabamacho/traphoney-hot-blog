@@ -4,118 +4,117 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Bienvenido · ProfitLab</title>
-    <meta name="description" content="Bienvenido a ProfitLab. Tus primeros pasos, fáciles." />
+    <meta name="description" content="Bienvenido a ProfitLab. Tus primeros pasos, explicados con calma." />
     <style>
       :root {
         --accent: #6b4efc;
-        --accent-strong: #5736ef;
-        --ink: #14121f;
-        --muted: #6b6880;
-        --soft: #9088a3;
+        --ink: #1b1924;
+        --body: #4a4757;
+        --muted: #8b8898;
         --card: #ffffff;
-        --radius: 26px;
+        --radius: 24px;
       }
       * { box-sizing: border-box; }
       html { -webkit-text-size-adjust: 100%; }
       body {
         margin: 0;
         min-height: 100vh;
-        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI",
-          Roboto, Inter, Helvetica, Arial, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+          "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
         color: var(--ink);
-        line-height: 1.5;
+        line-height: 1.6;
         -webkit-font-smoothing: antialiased;
         background:
-          radial-gradient(1100px 620px at 12% -2%, rgba(150, 180, 255, 0.5), transparent 58%),
-          radial-gradient(1000px 520px at 102% 4%, rgba(255, 188, 158, 0.55), transparent 55%),
-          radial-gradient(880px 620px at -5% 102%, rgba(255, 200, 178, 0.5), transparent 55%),
-          radial-gradient(1000px 720px at 105% 104%, rgba(196, 178, 255, 0.55), transparent 55%),
-          #f3f3fb;
+          radial-gradient(1100px 600px at 12% -2%, rgba(150, 180, 255, 0.4), transparent 58%),
+          radial-gradient(1000px 500px at 102% 4%, rgba(255, 188, 158, 0.42), transparent 55%),
+          radial-gradient(880px 600px at -5% 102%, rgba(255, 200, 178, 0.38), transparent 55%),
+          radial-gradient(1000px 700px at 105% 104%, rgba(196, 178, 255, 0.42), transparent 55%),
+          #f5f5fa;
         background-attachment: fixed;
       }
-      .wrap { max-width: 640px; margin: 0 auto; padding: 0 20px 56px; }
+      .wrap { max-width: 600px; margin: 0 auto; padding: 0 22px 60px; }
 
       .brand {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 8px;
-        padding: 32px 0 6px;
-        font-size: 20px;
-        font-weight: 800;
+        gap: 7px;
+        padding: 34px 0 4px;
+        font-size: 19px;
+        font-weight: 700;
         letter-spacing: -0.01em;
       }
       .brand .lab { color: var(--accent); }
 
-      .hero { text-align: center; padding: 34px 0 8px; }
+      .hero { text-align: center; padding: 36px 0 6px; }
       .hero h1 {
-        font-size: 46px;
-        line-height: 1.04;
+        font-size: 44px;
+        line-height: 1.05;
         font-weight: 800;
-        letter-spacing: -0.03em;
+        letter-spacing: -0.035em;
         margin: 0;
       }
       .hero p {
-        font-size: 18px;
+        font-size: 17.5px;
         color: var(--muted);
-        max-width: 360px;
+        max-width: 380px;
         margin: 14px auto 0;
       }
 
-      ol.steps { list-style: none; margin: 30px 0 0; padding: 0; }
+      ol.steps { list-style: none; margin: 34px 0 0; padding: 0; }
       .step {
         background: var(--card);
-        border: 1px solid rgba(255, 255, 255, 0.7);
+        border: 1px solid rgba(120, 110, 160, 0.08);
         border-radius: var(--radius);
-        padding: 22px;
-        margin-bottom: 14px;
-        box-shadow: 0 20px 42px -26px rgba(70, 55, 140, 0.45),
-          0 3px 12px rgba(20, 18, 31, 0.04);
+        padding: 26px 26px 24px;
+        margin-bottom: 16px;
+        box-shadow: 0 18px 40px -28px rgba(60, 50, 120, 0.4);
         display: flex;
-        gap: 16px;
-        align-items: center;
+        gap: 18px;
+        align-items: flex-start;
       }
-      .icon {
+      .num {
         flex: 0 0 auto;
-        width: 52px;
-        height: 52px;
-        border-radius: 16px;
-        background: linear-gradient(140deg, #8e7bff, #6b4efc);
-        color: #fff;
-        font-weight: 800;
-        font-size: 21px;
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: rgba(107, 78, 252, 0.1);
+        color: var(--accent);
+        font-weight: 700;
+        font-size: 15px;
         display: flex;
         align-items: center;
         justify-content: center;
-        box-shadow: 0 12px 22px -8px rgba(107, 78, 252, 0.6);
+        margin-top: 2px;
       }
       .grow { min-width: 0; flex: 1; }
-      .step h2 { font-size: 18px; font-weight: 800; letter-spacing: -0.01em; margin: 0 0 3px; }
-      .step p { color: var(--muted); font-size: 15px; margin: 0; }
-      .step p .hi { color: var(--accent); font-weight: 700; }
-
-      .go {
-        flex: 0 0 auto;
-        text-decoration: none;
-        background: var(--accent);
-        color: #fff;
+      .step h2 {
+        font-size: 19px;
         font-weight: 700;
-        font-size: 15px;
-        padding: 11px 16px;
-        border-radius: 13px;
-        box-shadow: 0 12px 22px -10px rgba(107, 78, 252, 0.7);
-        transition: transform 0.12s ease, background 0.15s ease;
-        white-space: nowrap;
+        letter-spacing: -0.015em;
+        margin: 0 0 7px;
       }
-      .go:hover { background: var(--accent-strong); transform: translateY(-1px); }
+      .step p { color: var(--body); font-size: 16px; margin: 0; }
+      .step p strong { color: var(--ink); font-weight: 650; }
 
-      footer { text-align: center; color: var(--soft); font-size: 14px; padding: 36px 0 8px; }
-      footer .lab { color: var(--accent); font-weight: 700; }
+      .next {
+        display: inline-block;
+        margin-top: 14px;
+        color: var(--accent);
+        text-decoration: none;
+        font-size: 14.5px;
+        font-weight: 600;
+        opacity: 0.9;
+        transition: opacity 0.15s ease;
+      }
+      .next:hover { opacity: 1; text-decoration: underline; }
+
+      footer { text-align: center; color: var(--muted); font-size: 13.5px; padding: 38px 0 8px; }
+      footer .lab { color: var(--accent); font-weight: 600; }
 
       @media (max-width: 540px) {
-        .hero h1 { font-size: 38px; }
-        .step { flex-wrap: wrap; }
-        .go { width: 100%; text-align: center; margin-top: 4px; }
+        .hero h1 { font-size: 37px; }
+        .step { padding: 22px; }
       }
     </style>
   </head>
@@ -125,59 +124,86 @@
 
       <header class="hero">
         <h1>Bienvenido 👋</h1>
-        <p>Enhorabuena, ya estás dentro. Sigue estos pasos y empieza hoy.</p>
+        <p>Enhorabuena, ya estás dentro. Aquí tienes tus primeros pasos, con calma y en orden.</p>
       </header>
 
       <ol class="steps">
         <li class="step">
-          <div class="icon">1</div>
+          <div class="num">1</div>
           <div class="grow">
-            <h2>💬 Discord</h2>
-            <p>La comunidad y tu ticket privado.</p>
-          </div>
-          <a class="go" href="https://discord.gg/hu8VjjYCS" target="_blank" rel="noopener">Entrar</a>
-        </li>
-
-        <li class="step">
-          <div class="icon">2</div>
-          <div class="grow">
-            <h2>🛒 Whop</h2>
-            <p>Tu panel. Entra con el correo del pago.</p>
-          </div>
-          <a class="go" href="https://whop.com/profit-lab-b584?a=cabamacho" target="_blank" rel="noopener">Abrir</a>
-        </li>
-
-        <li class="step">
-          <div class="icon">3</div>
-          <div class="grow">
-            <h2>🤖 Magnific</h2>
-            <p>Plan PREMIUM+ (40€/mes). <span class="hi">Págalo mensual, nunca anual.</span></p>
-          </div>
-          <a class="go" href="https://app.notion.com/p/Afiliado-3683f2b7892280d89ed5cdf6558df8a6?source=copy_link#3763f2b7892280528ed3d7f906d7b072" target="_blank" rel="noopener">Activar</a>
-        </li>
-
-        <li class="step">
-          <div class="icon">4</div>
-          <div class="grow">
-            <h2>🎓 Formación</h2>
-            <p>Tu primer paso: crear contenido viral y monetizarlo.</p>
-          </div>
-          <a class="go" href="https://whop.com/profit-lab-b584?a=cabamacho" target="_blank" rel="noopener">Ver</a>
-        </li>
-
-        <li class="step">
-          <div class="icon">5</div>
-          <div class="grow">
-            <h2>🔑 El sistema</h2>
-            <p>Al acabar la formación, pídelo por tu ticket de Discord.</p>
+            <h2>Únete al Discord</h2>
+            <p>
+              Discord es el centro de todo. Dentro está la <strong>comunidad</strong> y tu
+              <strong>ticket privado</strong>: un canal solo para ti, que creamos nosotros, para
+              ayudarte y enviarte lo que necesites. Acepta la invitación y entra.
+            </p>
+            <a class="next" href="https://discord.gg/hu8VjjYCS" target="_blank" rel="noopener">Abrir Discord →</a>
           </div>
         </li>
 
         <li class="step">
-          <div class="icon">6</div>
+          <div class="num">2</div>
           <div class="grow">
-            <h2>🔥 Crea</h2>
-            <p>Abre Magnific y empieza. Imágenes y vídeos casi ilimitados.</p>
+            <h2>Entra en tu Whop</h2>
+            <p>
+              Whop es tu <strong>panel privado</strong>, donde tienes todo organizado. Inicia
+              sesión con el <strong>mismo correo del pago</strong> y verás tus accesos. Solo tienes
+              que ir entrando en cada apartado para descubrir el material.
+            </p>
+            <a class="next" href="https://whop.com/profit-lab-b584?a=cabamacho" target="_blank" rel="noopener">Abrir Whop →</a>
+          </div>
+        </li>
+
+        <li class="step">
+          <div class="num">3</div>
+          <div class="grow">
+            <h2>Activa Magnific</h2>
+            <p>
+              Nuestro sistema funciona <strong>dentro de Magnific</strong>, así que necesitas su
+              plan <strong>PREMIUM+ (40&nbsp;€/mes)</strong>. Con él tendrás imágenes y vídeos
+              prácticamente ilimitados. <strong>Importante:</strong> elige el pago
+              <strong>mensual</strong>, nunca el anual — la inteligencia artificial avanza muy
+              rápido y no conviene atarse un año entero.
+            </p>
+            <a class="next" href="https://app.notion.com/p/Afiliado-3683f2b7892280d89ed5cdf6558df8a6?source=copy_link#3763f2b7892280528ed3d7f906d7b072" target="_blank" rel="noopener">Activar Magnific →</a>
+          </div>
+        </li>
+
+        <li class="step">
+          <div class="num">4</div>
+          <div class="grow">
+            <h2>Mira la formación</h2>
+            <p>
+              Este es tu <strong>primer paso de verdad</strong>. En la formación grabada aprendes
+              cómo funciona el juego: la <strong>psicología</strong> que hace que un contenido se
+              vuelva viral y, sobre todo, cómo <strong>monetizarlo</strong> (viralizar sin ganar
+              dinero no sirve de nada). Incluye casos prácticos para empezar desde ya.
+            </p>
+            <a class="next" href="https://whop.com/profit-lab-b584?a=cabamacho" target="_blank" rel="noopener">Ver la formación →</a>
+          </div>
+        </li>
+
+        <li class="step">
+          <div class="num">5</div>
+          <div class="grow">
+            <h2>Pide el sistema</h2>
+            <p>
+              Cuando termines la formación, pídenos <strong>el sistema</strong> por tu
+              <strong>ticket privado de Discord</strong>. Te enviamos ahí mismo el acceso para que
+              empieces a usarlo.
+            </p>
+          </div>
+        </li>
+
+        <li class="step">
+          <div class="num">6</div>
+          <div class="grow">
+            <h2>Empieza a crear</h2>
+            <p>
+              Ya lo tienes todo. Abre <strong>Magnific</strong> y ponte a crear: puedes usar
+              nuestro sistema tal cual o crear tus propias ideas. La formación ya te ha enseñado a
+              usar cada herramienta. A por ello.
+            </p>
           </div>
         </li>
       </ol>
