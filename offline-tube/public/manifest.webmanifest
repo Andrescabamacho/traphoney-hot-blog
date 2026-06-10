@@ -1,0 +1,19 @@
+{
+  "name": "OfflineTube — YouTube sin internet",
+  "short_name": "OfflineTube",
+  "description": "Descarga vídeos de YouTube con internet y míralos sin conexión.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0f0f0f",
+  "theme_color": "#0f0f0f",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "name": "offline-tube",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Descarga vídeos de YouTube con internet y míralos offline (avión, sin cobertura). PWA + yt-dlp.",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "setup": "node setup.js",
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}

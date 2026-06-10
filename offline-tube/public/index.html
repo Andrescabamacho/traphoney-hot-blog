@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#0f0f0f" />
+    <title>OfflineTube — YouTube sin internet</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="icon.svg" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="brand">
+        <span class="logo">▶</span>
+        <span>OfflineTube</span>
+      </div>
+      <span id="net" class="net" title="Estado de conexión">···</span>
+    </header>
+
+    <main>
+      <section class="adder">
+        <div class="row">
+          <input
+            id="url"
+            type="url"
+            inputmode="url"
+            placeholder="Pega aquí un enlace de YouTube…"
+            autocomplete="off"
+          />
+          <select id="quality" title="Calidad / tamaño">
+            <option value="360">360p</option>
+            <option value="480">480p</option>
+            <option value="720" selected>720p</option>
+            <option value="1080">1080p</option>
+          </select>
+          <button id="add">Descargar</button>
+        </div>
+        <p id="hint" class="hint">
+          Con internet, descarga los vídeos que quieras. Luego se ven sin conexión (avión, metro…).
+        </p>
+      </section>
+
+      <section id="downloads" class="downloads"></section>
+
+      <h2 class="lib-title">Mi biblioteca offline</h2>
+      <section id="library" class="library"></section>
+      <p id="empty" class="empty">Aún no has guardado vídeos. Pega un enlace arriba 👆</p>
+    </main>
+
+    <!-- Reproductor a pantalla completa -->
+    <div id="player" class="player hidden">
+      <button id="closePlayer" class="close">✕</button>
+      <video id="video" controls playsinline></video>
+      <div id="playerTitle" class="player-title"></div>
+    </div>
+
+    <script src="db.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>
