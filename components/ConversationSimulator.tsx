@@ -119,7 +119,6 @@ export default function ConversationSimulator() {
 
   const [draft, setDraft] = useState('')
   const [side, setSide] = useState<Side>('left')
-  const [transparent, setTransparent] = useState(false)
   const [avatarSrc, setAvatarSrc] = useState<string | null>('/static/images/avatar-default.jpg')
   const [avatarReady, setAvatarReady] = useState(false)
 
@@ -190,12 +189,8 @@ export default function ConversationSimulator() {
     ctx.font = `${FONT_SIZE}px ${FONT_STACK}`
     ctx.textBaseline = 'top'
 
-    if (!transparent) {
-      ctx.fillStyle = COLORS.bg
-      ctx.fillRect(0, 0, W, totalH)
-    } else {
-      ctx.clearRect(0, 0, W, totalH)
-    }
+    // Lienzo siempre transparente: la descarga sale sin fondo (solo burbujas y foto).
+    ctx.clearRect(0, 0, W, totalH)
 
     // ---- Dibujo ----
     let y = TOP_PAD
@@ -246,7 +241,7 @@ export default function ConversationSimulator() {
         y += laid[i + 1].msg.side === l.msg.side ? GAP_SAME : GAP_NORMAL
       }
     })
-  }, [messages, transparent, avatarReady])
+  }, [messages, avatarReady])
 
   useEffect(() => {
     draw()
@@ -297,158 +292,136 @@ export default function ConversationSimulator() {
   }
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[1fr_minmax(320px,520px)]">
-      {/* ----- Panel de control ----- */}
-      <div className="space-y-5">
-        <div className="rounded-2xl border border-gray-200 p-4 dark:border-gray-700">
-          {/* Selector de lado */}
-          <div className="mb-3 flex gap-2">
-            <button
-              type="button"
-              onClick={() => setSide('left')}
-              className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition ${
-                side === 'left'
-                  ? 'bg-gray-800 text-white dark:bg-gray-200 dark:text-gray-900'
-                  : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300'
-              }`}
-            >
-              ⬅️ Izquierda (con foto)
-            </button>
-            <button
-              type="button"
-              onClick={() => setSide('right')}
-              className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition ${
-                side === 'right'
-                  ? 'bg-gray-800 text-white dark:bg-gray-200 dark:text-gray-900'
-                  : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-300'
-              }`}
-            >
-              Derecha (tú) ➡️
-            </button>
-          </div>
-
-          <textarea
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={onKeyDown}
-            rows={3}
-            placeholder="Escribe el mensaje…  (usa Enter para saltos de línea, Ctrl/Cmd+Enter para añadir)"
-            className="w-full resize-y rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
-          />
+    <div className="mx-auto flex max-w-[460px] flex-col gap-4">
+      {/* ----- Controles ----- */}
+      <div className="rounded-2xl border border-gray-200 p-4 dark:border-gray-700">
+        <div className="mb-3 flex gap-1.5 rounded-xl bg-gray-100 p-1.5 dark:bg-gray-800">
           <button
             type="button"
-            onClick={addMessage}
-            className="mt-2 w-full rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700"
+            onClick={() => setSide('left')}
+            className={`flex-1 rounded-lg px-3 py-2.5 text-sm font-semibold transition ${
+              side === 'left'
+                ? 'bg-white text-gray-900 shadow-sm dark:bg-gray-200'
+                : 'text-gray-500 dark:text-gray-400'
+            }`}
           >
-            + Añadir mensaje
+            ⬅️ Izquierda
+          </button>
+          <button
+            type="button"
+            onClick={() => setSide('right')}
+            className={`flex-1 rounded-lg px-3 py-2.5 text-sm font-semibold transition ${
+              side === 'right'
+                ? 'bg-white text-gray-900 shadow-sm dark:bg-gray-200'
+                : 'text-gray-500 dark:text-gray-400'
+            }`}
+          >
+            Derecha (tú) ➡️
           </button>
         </div>
 
-        {/* Opciones */}
-        <div className="rounded-2xl border border-gray-200 p-4 dark:border-gray-700">
-          <h3 className="mb-3 text-sm font-semibold text-gray-900 dark:text-gray-100">Opciones</h3>
-          <label className="mb-3 flex flex-col gap-1 text-sm text-gray-700 dark:text-gray-300">
-            Foto de perfil (lado izquierdo)
-            <input
-              type="file"
-              accept="image/*"
-              onChange={onAvatarUpload}
-              className="text-xs file:mr-3 file:rounded-md file:border-0 file:bg-gray-200 file:px-3 file:py-1.5 file:text-sm file:font-medium hover:file:bg-gray-300 dark:file:bg-gray-700 dark:file:text-gray-100"
-            />
-          </label>
-          <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
-            <input
-              type="checkbox"
-              checked={transparent}
-              onChange={(e) => setTransparent(e.target.checked)}
-              className="rounded border-gray-300"
-            />
-            Fondo transparente (en vez de negro)
-          </label>
-        </div>
-
-        {/* Lista de mensajes */}
-        <div className="rounded-2xl border border-gray-200 p-4 dark:border-gray-700">
-          <h3 className="mb-3 text-sm font-semibold text-gray-900 dark:text-gray-100">
-            Mensajes ({messages.length})
-          </h3>
-          {messages.length === 0 && (
-            <p className="text-sm text-gray-500">Aún no hay mensajes. Añade el primero arriba.</p>
-          )}
-          <ul className="space-y-2">
-            {messages.map((m, i) => (
-              <li
-                key={m.id}
-                className="flex items-start gap-2 rounded-lg bg-gray-50 p-2 text-sm dark:bg-gray-800"
-              >
-                <span
-                  className={`mt-0.5 shrink-0 rounded px-1.5 py-0.5 text-xs font-medium ${
-                    m.side === 'left'
-                      ? 'bg-gray-700 text-white'
-                      : 'bg-amber-200 text-amber-900'
-                  }`}
-                >
-                  {m.side === 'left' ? 'Izq' : 'Der'}
-                </span>
-                <span className="grow whitespace-pre-wrap break-words text-gray-800 dark:text-gray-200">
-                  {m.text}
-                </span>
-                <span className="flex shrink-0 gap-1">
-                  <button
-                    type="button"
-                    onClick={() => move(m.id, -1)}
-                    disabled={i === 0}
-                    className="rounded px-1.5 text-gray-500 hover:bg-gray-200 disabled:opacity-30 dark:hover:bg-gray-700"
-                    title="Subir"
-                  >
-                    ↑
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => move(m.id, 1)}
-                    disabled={i === messages.length - 1}
-                    className="rounded px-1.5 text-gray-500 hover:bg-gray-200 disabled:opacity-30 dark:hover:bg-gray-700"
-                    title="Bajar"
-                  >
-                    ↓
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => removeMessage(m.id)}
-                    className="rounded px-1.5 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/40"
-                    title="Eliminar"
-                  >
-                    ✕
-                  </button>
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <textarea
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={onKeyDown}
+          rows={3}
+          placeholder="Escribe el mensaje…  (Enter = salto de línea)"
+          className="w-full resize-y rounded-xl border border-gray-300 bg-white px-3 py-3 text-base text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
+        />
+        <button
+          type="button"
+          onClick={addMessage}
+          className="mt-3 w-full rounded-xl bg-primary-600 px-4 py-3 text-sm font-bold text-white transition hover:bg-primary-700"
+        >
+          Publicar
+        </button>
       </div>
 
-      {/* ----- Vista previa ----- */}
-      <div className="space-y-4">
-        <div
-          className="overflow-hidden rounded-2xl"
-          style={{
-            background: transparent
-              ? 'repeating-conic-gradient(#e5e5e5 0% 25%, #ffffff 0% 50%) 50% / 20px 20px'
-              : '#000',
-          }}
-        >
+      {/* ----- Foto ----- */}
+      <div className="rounded-2xl border border-gray-200 p-4 dark:border-gray-700">
+        <label className="flex flex-col gap-2 text-sm text-gray-600 dark:text-gray-300">
+          Foto de perfil (lado izquierdo)
+          <input
+            type="file"
+            accept="image/*"
+            onChange={onAvatarUpload}
+            className="text-xs file:mr-3 file:rounded-md file:border-0 file:bg-gray-200 file:px-3 file:py-1.5 file:text-sm file:font-medium hover:file:bg-gray-300 dark:file:bg-gray-700 dark:file:text-gray-100"
+          />
+        </label>
+      </div>
+
+      {/* ----- Vista previa + descarga ----- */}
+      <div>
+        <div className="overflow-hidden rounded-2xl border border-gray-200 bg-black dark:border-gray-700">
           <canvas ref={canvasRef} className="block w-full" />
         </div>
         <button
           type="button"
           onClick={download}
-          className="w-full rounded-lg bg-green-600 px-4 py-3 text-sm font-semibold text-white transition hover:bg-green-700"
+          className="mt-3 w-full rounded-xl bg-white px-4 py-3 text-sm font-bold text-gray-900 ring-1 ring-gray-300 transition hover:bg-gray-100 dark:ring-gray-600"
         >
-          ⬇️ Descargar imagen (PNG)
+          ⬇️ Descargar imagen
         </button>
-        <p className="text-center text-xs text-gray-500">
-          Se descarga exactamente lo que ves arriba.
+        <p className="mt-2 text-center text-xs text-gray-500">
+          Fondo transparente · solo la conversación y la foto
         </p>
+      </div>
+
+      {/* ----- Lista de mensajes ----- */}
+      <div className="rounded-2xl border border-gray-200 p-4 dark:border-gray-700">
+        <h3 className="mb-3 text-xs font-semibold tracking-wide text-gray-500 dark:text-gray-400">
+          MENSAJES
+        </h3>
+        {messages.length === 0 && (
+          <p className="text-sm text-gray-500">Aún no hay mensajes. Publica el primero arriba.</p>
+        )}
+        <ul className="space-y-2">
+          {messages.map((m, i) => (
+            <li
+              key={m.id}
+              className="flex items-start gap-2.5 rounded-xl bg-gray-50 p-2.5 text-sm dark:bg-gray-800"
+            >
+              <span
+                className={`mt-0.5 shrink-0 rounded px-2 py-0.5 text-xs font-semibold ${
+                  m.side === 'left' ? 'bg-gray-700 text-white' : 'bg-amber-200 text-amber-900'
+                }`}
+              >
+                {m.side === 'left' ? 'Izq' : 'Der'}
+              </span>
+              <span className="grow whitespace-pre-wrap break-words text-gray-800 dark:text-gray-200">
+                {m.text}
+              </span>
+              <span className="flex shrink-0 gap-0.5">
+                <button
+                  type="button"
+                  onClick={() => move(m.id, -1)}
+                  disabled={i === 0}
+                  className="rounded px-1.5 text-gray-500 hover:bg-gray-200 disabled:opacity-30 dark:hover:bg-gray-700"
+                  title="Subir"
+                >
+                  ↑
+                </button>
+                <button
+                  type="button"
+                  onClick={() => move(m.id, 1)}
+                  disabled={i === messages.length - 1}
+                  className="rounded px-1.5 text-gray-500 hover:bg-gray-200 disabled:opacity-30 dark:hover:bg-gray-700"
+                  title="Bajar"
+                >
+                  ↓
+                </button>
+                <button
+                  type="button"
+                  onClick={() => removeMessage(m.id)}
+                  className="rounded px-1.5 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/40"
+                  title="Eliminar"
+                >
+                  ✕
+                </button>
+              </span>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   )
