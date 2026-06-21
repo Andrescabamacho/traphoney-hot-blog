@@ -11,7 +11,7 @@ interface Message {
 }
 
 // ---- Estilo tipo DM de Instagram (modo oscuro) ----
-const W = 600 // ancho lógico del lienzo
+const W = 460 // ancho lógico del lienzo
 const SCALE = 2 // exportación nítida (retina)
 const SIDE_PAD = 16
 const TOP_PAD = 22
