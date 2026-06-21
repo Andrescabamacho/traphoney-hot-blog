@@ -1,4 +1,6 @@
-const CACHE = 'simulador-v1'
+// Estrategia "network-first": si hay internet, siempre carga la última versión
+// y la guarda; sin internet, usa la última copia guardada.
+const CACHE = 'simulador-v2'
 const ASSETS = ['index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png']
 
 self.addEventListener('install', (e) => {
@@ -20,9 +22,14 @@ self.addEventListener('activate', (e) => {
 })
 
 self.addEventListener('fetch', (e) => {
-  if (e.request.mode === 'navigate') {
-    e.respondWith(caches.match('index.html').then((r) => r || fetch(e.request)))
-    return
-  }
-  e.respondWith(caches.match(e.request).then((r) => r || fetch(e.request)))
+  if (e.request.method !== 'GET') return
+  e.respondWith(
+    fetch(e.request)
+      .then((res) => {
+        const copy = res.clone()
+        caches.open(CACHE).then((c) => c.put(e.request, copy)).catch(() => {})
+        return res
+      })
+      .catch(() => caches.match(e.request).then((r) => r || caches.match('index.html')))
+  )
 })
