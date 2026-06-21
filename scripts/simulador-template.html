@@ -134,7 +134,7 @@
 
   var DEFAULT_AVATAR = "__AVATAR__";
 
-  var W = 460, SCALE = 2, SIDE_PAD = 16, TOP_PAD = 22, BOTTOM_PAD = 22;
+  var W = 460, SCALE = 3, SIDE_PAD = 22, TOP_PAD = 22, BOTTOM_PAD = 22;
   var PAD_X = 15, PAD_Y = 11, RADIUS = 22, FONT_SIZE = 17, LINE_HEIGHT = 23;
   var AVATAR = 30, AVATAR_GAP = 9, GAP_NORMAL = 12, GAP_SAME = 3;
   var FONT = '17px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
@@ -239,7 +239,7 @@
     canvas.width = W * SCALE;
     canvas.height = Math.ceil(totalH) * SCALE;
     ctx.scale(SCALE, SCALE);
-    ctx.font = FONT; ctx.textBaseline = 'top';
+    ctx.font = FONT; ctx.textBaseline = 'middle';
 
     // Lienzo SIEMPRE transparente: la descarga sale sin fondo.
     ctx.clearRect(0, 0, W, totalH);
@@ -255,7 +255,8 @@
 
       ctx.fillStyle = isLeft ? COLORS.leftText : COLORS.rightText;
       l.lines.forEach(function (line, li) {
-        ctx.fillText(line, x + PAD_X, y + PAD_Y + li * LINE_HEIGHT + (LINE_HEIGHT - FONT_SIZE) / 2);
+        // baseline 'middle': centramos cada línea en su franja para simetría vertical
+        ctx.fillText(line, x + PAD_X, y + PAD_Y + li * LINE_HEIGHT + LINE_HEIGHT / 2);
       });
 
       if (isLeft && l.lastOfGroup) {

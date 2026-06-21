@@ -12,8 +12,8 @@ interface Message {
 
 // ---- Estilo tipo DM de Instagram (modo oscuro) ----
 const W = 460 // ancho lógico del lienzo
-const SCALE = 2 // exportación nítida (retina)
-const SIDE_PAD = 16
+const SCALE = 3 // exportación nítida (alta resolución)
+const SIDE_PAD = 22
 const TOP_PAD = 22
 const BOTTOM_PAD = 22
 const PAD_X = 15
@@ -187,7 +187,7 @@ export default function ConversationSimulator() {
 
     ctx.scale(SCALE, SCALE)
     ctx.font = `${FONT_SIZE}px ${FONT_STACK}`
-    ctx.textBaseline = 'top'
+    ctx.textBaseline = 'middle'
 
     // Lienzo siempre transparente: la descarga sale sin fondo (solo burbujas y foto).
     ctx.clearRect(0, 0, W, totalH)
@@ -206,7 +206,8 @@ export default function ConversationSimulator() {
       // texto
       ctx.fillStyle = isLeft ? COLORS.leftText : COLORS.rightText
       l.lines.forEach((line, li) => {
-        ctx.fillText(line, x + PAD_X, y + PAD_Y + li * LINE_HEIGHT + (LINE_HEIGHT - FONT_SIZE) / 2)
+        // baseline 'middle': centramos cada línea en su franja para simetría vertical
+        ctx.fillText(line, x + PAD_X, y + PAD_Y + li * LINE_HEIGHT + LINE_HEIGHT / 2)
       })
 
       // avatar (solo en el último mensaje del grupo de la izquierda)
