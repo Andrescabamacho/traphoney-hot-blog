@@ -30,9 +30,9 @@ const FONT_STACK =
 
 const COLORS = {
   bg: '#000000',
-  rightBubble: '#ece4d9',
+  rightBubble: '#dfd6d1',
   rightText: '#1c1c1e',
-  leftBubble: '#262628',
+  leftBubble: '#202020',
   leftText: '#ffffff',
   avatarFallback: '#3a3a3c',
 }
