@@ -102,20 +102,7 @@ export default function ConversationSimulator() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const avatarImgRef = useRef<HTMLImageElement | null>(null)
 
-  const [messages, setMessages] = useState<Message[]>([
-    { id: 'a', side: 'right', text: 'Es malo sobre pensar?' },
-    {
-      id: 'b',
-      side: 'left',
-      text: 'Si, cuando no filtras tus pensamientos.\n\nPero si aprendes a usar tu mente, la convertirás en tu superpoder.',
-    },
-    { id: 'c', side: 'right', text: 'Mi superpoder?' },
-    {
-      id: 'd',
-      side: 'left',
-      text: 'Claro.\nComo cuando descubres la página de trucos del GTA',
-    },
-  ])
+  const [messages, setMessages] = useState<Message[]>([])
 
   const [draft, setDraft] = useState('')
   const [side, setSide] = useState<Side>('left')
