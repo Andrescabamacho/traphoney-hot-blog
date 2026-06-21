@@ -130,8 +130,21 @@
       var words = para.split(' ');
       var cur = '';
       for (var wi = 0; wi < words.length; wi++) {
-        var t = cur ? cur + ' ' + words[wi] : words[wi];
-        if (c.measureText(t).width > maxWidth && cur) { lines.push(cur); cur = words[wi]; }
+        var word = words[wi];
+        // Palabra mas larga que la burbuja: partir caracter a caracter
+        if (c.measureText(word).width > maxWidth) {
+          if (cur) { lines.push(cur); cur = ''; }
+          var chunk = '';
+          for (var ci = 0; ci < word.length; ci++) {
+            var test = chunk + word[ci];
+            if (c.measureText(test).width > maxWidth && chunk) { lines.push(chunk); chunk = word[ci]; }
+            else { chunk = test; }
+          }
+          cur = chunk;
+          continue;
+        }
+        var t = cur ? cur + ' ' + word : word;
+        if (c.measureText(t).width > maxWidth && cur) { lines.push(cur); cur = word; }
         else { cur = t; }
       }
       lines.push(cur);

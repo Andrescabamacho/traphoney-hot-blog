@@ -48,6 +48,25 @@ function wrapText(ctx: CanvasRenderingContext2D, text: string, maxWidth: number)
     const words = paragraph.split(' ')
     let current = ''
     for (const word of words) {
+      // Palabra más larga que la burbuja: partir carácter a carácter
+      if (ctx.measureText(word).width > maxWidth) {
+        if (current) {
+          lines.push(current)
+          current = ''
+        }
+        let chunk = ''
+        for (const ch of word) {
+          const test = chunk + ch
+          if (ctx.measureText(test).width > maxWidth && chunk) {
+            lines.push(chunk)
+            chunk = ch
+          } else {
+            chunk = test
+          }
+        }
+        current = chunk
+        continue
+      }
       const test = current ? current + ' ' + word : word
       if (ctx.measureText(test).width > maxWidth && current) {
         lines.push(current)
