@@ -282,7 +282,7 @@ export default function ConversationSimulator() {
   return (
     <div className="mx-auto flex max-w-[460px] flex-col gap-4">
       {/* ----- Logo ----- */}
-      <div className="-mb-2 flex h-[86px] items-center justify-center overflow-hidden">
+      <div className="mb-3 flex h-[86px] items-center justify-center overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/static/images/logo-firma.png"
