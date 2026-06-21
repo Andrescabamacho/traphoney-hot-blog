@@ -1,7 +1,7 @@
 // Estrategia "network-first": si hay internet, siempre carga la última versión
 // y la guarda; sin internet, usa la última copia guardada.
 const CACHE = 'simulador-v2'
-const ASSETS = ['index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png']
+const ASSETS = ['index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png', 'logo-firma.png']
 
 self.addEventListener('install', (e) => {
   e.waitUntil(

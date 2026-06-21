@@ -281,6 +281,16 @@ export default function ConversationSimulator() {
 
   return (
     <div className="mx-auto flex max-w-[460px] flex-col gap-4">
+      {/* ----- Logo ----- */}
+      <div className="-mb-2 flex h-[86px] items-center justify-center overflow-hidden">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/static/images/logo-firma.png"
+          alt="Logo"
+          className="h-[150px] w-[150px] object-contain opacity-95"
+        />
+      </div>
+
       {/* ----- Controles ----- */}
       <div className="rounded-2xl border border-gray-200 p-4 dark:border-gray-700">
         <div className="mb-3 flex gap-1.5 rounded-xl bg-gray-100 p-1.5 dark:bg-gray-800">
