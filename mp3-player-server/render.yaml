@@ -1,0 +1,13 @@
+# Blueprint de Render. Permite desplegar el servidor con pocos clics.
+# En Render: New + → Blueprint → conecta este repositorio.
+services:
+  - type: web
+    name: mi-musica-server
+    runtime: docker
+    plan: free
+    dockerfilePath: ./mp3-player-server/Dockerfile
+    dockerContext: ./mp3-player-server
+    healthCheckPath: /health
+    envVars:
+      - key: ALLOWED_ORIGIN
+        value: "*"

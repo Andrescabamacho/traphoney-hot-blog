@@ -11,6 +11,12 @@ guarda dentro del móvil, suena **sin internet** y **con la pantalla apagada**
 - Suena con la **pantalla bloqueada** gracias a la **Media Session API**, y verás
   los controles (play/pausa/siguiente/anterior) en tu pantalla de bloqueo.
 - Estética minimalista, oscura y súper sencilla: lista de canciones + reproductor.
+- **Descargar de YouTube** (botón ▶ rojo arriba): pegas un enlace y se descarga
+  directo a tu biblioteca. Requiere desplegar el servidor de `../mp3-player-server`
+  (ver su README) y pegar su dirección una vez en la app (botón YouTube → ⚙️).
+
+  > ⚠️ Descargar contenido con copyright de YouTube va contra sus Términos de
+  > Servicio. Úsalo solo con contenido propio o con licencia libre.
 
 ## Cómo subirla a internet (elige una)
 

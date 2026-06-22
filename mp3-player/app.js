@@ -311,32 +311,151 @@
   }
 
   // ---------- Añadir / eliminar ----------
+  // Guarda un blob de audio como pista nueva (devuelve la pista creada).
+  async function saveTrack(blob, { title, artist, type, name, size }) {
+    const maxOrder = tracks.reduce((m, t) => Math.max(m, t.order), 0);
+    const track = {
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      name: name || `${title}.mp3`,
+      title: title || 'Audio',
+      artist: artist || 'Desconocido',
+      type: type || 'audio/mpeg',
+      size: size || blob.size,
+      order: maxOrder + 1,
+      blob,
+    };
+    await dbPut(track);
+    tracks.push(track);
+    return track;
+  }
+
   async function addFiles(fileList) {
     const files = Array.from(fileList).filter((f) => f.type.startsWith('audio/') || /\.(mp3|m4a|aac|ogg|wav|flac|opus)$/i.test(f.name));
     if (files.length === 0) {
       showToast('No se han seleccionado audios');
       return;
     }
-    let maxOrder = tracks.reduce((m, t) => Math.max(m, t.order), 0);
     for (const f of files) {
-      maxOrder++;
       const { artist, title } = parseName(f.name);
-      const track = {
-        id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-        name: f.name,
-        title,
-        artist,
-        type: f.type || 'audio/mpeg',
-        size: f.size,
-        order: maxOrder,
-        blob: f, // los File son Blob, IndexedDB los guarda tal cual
-      };
-      await dbPut(track);
-      tracks.push(track);
+      await saveTrack(f, { title, artist, type: f.type || 'audio/mpeg', name: f.name, size: f.size });
     }
     render();
     showToast(files.length === 1 ? 'Canción añadida' : `${files.length} canciones añadidas`);
   }
+
+  // ---------- Descarga desde YouTube ----------
+  const ytOverlay = document.getElementById('ytOverlay');
+  const ytUrl = document.getElementById('ytUrl');
+  const ytStatus = document.getElementById('ytStatus');
+  const ytDownload = document.getElementById('ytDownload');
+  const serverUrlInput = document.getElementById('serverUrl');
+  const ytSettings = document.getElementById('ytSettings');
+
+  function getServerUrl() {
+    return (localStorage.getItem('serverUrl') || '').replace(/\/+$/, '');
+  }
+
+  function openYt() {
+    serverUrlInput.value = getServerUrl();
+    ytStatus.textContent = '';
+    ytStatus.className = 'yt-status';
+    // Si no hay servidor configurado, abre los ajustes directamente.
+    if (!getServerUrl()) {
+      ytSettings.classList.remove('hidden');
+      setYtStatus('Primero configura tu servidor abajo ⬇️', 'error');
+    } else {
+      ytSettings.classList.add('hidden');
+    }
+    ytOverlay.classList.remove('hidden');
+    if (getServerUrl()) setTimeout(() => ytUrl.focus(), 150);
+  }
+
+  function closeYt() { ytOverlay.classList.add('hidden'); }
+
+  function setYtStatus(msg, kind) {
+    ytStatus.textContent = msg;
+    ytStatus.className = 'yt-status' + (kind ? ' ' + kind : '');
+  }
+
+  async function downloadFromYouTube() {
+    const server = getServerUrl();
+    if (!server) {
+      ytSettings.classList.remove('hidden');
+      setYtStatus('Configura primero la dirección de tu servidor.', 'error');
+      return;
+    }
+    const link = ytUrl.value.trim();
+    if (!link) { setYtStatus('Pega un enlace de YouTube.', 'error'); return; }
+    if (!/youtube\.com|youtu\.be/i.test(link)) {
+      setYtStatus('Eso no parece un enlace de YouTube.', 'error');
+      return;
+    }
+
+    ytDownload.disabled = true;
+    setYtStatus('Descargando… esto puede tardar hasta 1 minuto ⏳', 'loading');
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 190000);
+    try {
+      const res = await fetch(`${server}/api/download`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: link }),
+        signal: controller.signal,
+      });
+      if (!res.ok) {
+        let msg = `Error ${res.status}`;
+        try { const j = await res.json(); if (j.error) msg = j.error; } catch {}
+        throw new Error(msg);
+      }
+      const title = decodeURIComponent(res.headers.get('X-Title') || 'Audio');
+      const artist = decodeURIComponent(res.headers.get('X-Artist') || 'YouTube');
+      const blob = await res.blob();
+      await saveTrack(blob, { title, artist, type: 'audio/mpeg', name: `${title}.mp3` });
+      render();
+      setYtStatus('✅ Añadida a tu biblioteca', 'ok');
+      ytUrl.value = '';
+      showToast('Canción descargada');
+      setTimeout(closeYt, 1200);
+    } catch (e) {
+      const msg = e.name === 'AbortError'
+        ? 'Tardó demasiado. Inténtalo de nuevo.'
+        : (e.message || 'No se pudo descargar.');
+      setYtStatus('❌ ' + msg, 'error');
+    } finally {
+      clearTimeout(timer);
+      ytDownload.disabled = false;
+    }
+  }
+
+  document.getElementById('ytBtn').addEventListener('click', openYt);
+  document.getElementById('ytClose').addEventListener('click', closeYt);
+  ytOverlay.addEventListener('click', (e) => { if (e.target === ytOverlay) closeYt(); });
+  ytDownload.addEventListener('click', downloadFromYouTube);
+  ytUrl.addEventListener('keydown', (e) => { if (e.key === 'Enter') downloadFromYouTube(); });
+
+  document.getElementById('ytPaste').addEventListener('click', async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text) ytUrl.value = text.trim();
+    } catch {
+      setYtStatus('No se pudo leer el portapapeles. Pega manualmente.', 'error');
+    }
+  });
+
+  document.getElementById('ytSettingsToggle').addEventListener('click', () => {
+    ytSettings.classList.toggle('hidden');
+  });
+  document.getElementById('serverSave').addEventListener('click', () => {
+    const v = serverUrlInput.value.trim().replace(/\/+$/, '');
+    if (v && !/^https?:\/\//i.test(v)) {
+      setYtStatus('La dirección debe empezar por https://', 'error');
+      return;
+    }
+    localStorage.setItem('serverUrl', v);
+    setYtStatus(v ? '✅ Servidor guardado' : 'Servidor borrado', v ? 'ok' : '');
+    if (v) { ytSettings.classList.add('hidden'); setTimeout(() => ytUrl.focus(), 100); }
+  });
 
   async function deleteTrack(id) {
     const t = trackById(id);
