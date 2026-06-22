@@ -1,7 +1,7 @@
 /* Service Worker — cachea la app para que funcione sin internet.
    La música no se cachea aquí: vive en IndexedDB dentro del móvil. */
 
-const CACHE = 'mi-musica-v2';
+const CACHE = 'mi-musica-v3';
 const ASSETS = [
   './',
   './index.html',

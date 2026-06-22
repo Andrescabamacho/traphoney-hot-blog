@@ -377,6 +377,31 @@
     ytStatus.className = 'yt-status' + (kind ? ' ' + kind : '');
   }
 
+  // Construye el endpoint al que llamar:
+  // - Si pegas la URL "pelada" del servidor Render -> le añade /api/download
+  // - Si pegas una URL con ruta (p. ej. un webhook de n8n) -> la usa tal cual
+  function buildEndpoint(server) {
+    try {
+      const u = new URL(server);
+      if (u.pathname === '' || u.pathname === '/') {
+        return server.replace(/\/+$/, '') + '/api/download';
+      }
+      return server; // ya es un endpoint completo (webhook de n8n, etc.)
+    } catch {
+      return server.replace(/\/+$/, '') + '/api/download';
+    }
+  }
+
+  // Saca un título legible de la respuesta, venga de donde venga.
+  function titleFromResponse(res) {
+    let title = res.headers.get('X-Title');
+    if (title) return decodeURIComponent(title);
+    const cd = res.headers.get('Content-Disposition') || '';
+    const m = cd.match(/filename\*?=(?:UTF-8'')?["']?([^"';]+)/i);
+    if (m) return decodeURIComponent(m[1]).replace(/\.[^.]+$/, '');
+    return null;
+  }
+
   async function downloadFromYouTube() {
     const server = getServerUrl();
     if (!server) {
@@ -395,9 +420,9 @@
     setYtStatus('Descargando… esto puede tardar hasta 1 minuto ⏳', 'loading');
 
     const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 190000);
+    const timer = setTimeout(() => controller.abort(), 290000);
     try {
-      const res = await fetch(`${server}/api/download`, {
+      const res = await fetch(buildEndpoint(server), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: link }),
@@ -405,13 +430,16 @@
       });
       if (!res.ok) {
         let msg = `Error ${res.status}`;
-        try { const j = await res.json(); if (j.error) msg = j.error; } catch {}
+        try { const j = await res.json(); if (j.error || j.message) msg = j.error || j.message; } catch {}
         throw new Error(msg);
       }
-      const title = decodeURIComponent(res.headers.get('X-Title') || 'Audio');
-      const artist = decodeURIComponent(res.headers.get('X-Artist') || 'YouTube');
       const blob = await res.blob();
-      await saveTrack(blob, { title, artist, type: 'audio/mpeg', name: `${title}.mp3` });
+      if (!blob || blob.size < 1024 || /json|text\/html/i.test(blob.type)) {
+        throw new Error('La respuesta no parece un audio. Revisa el flujo de n8n.');
+      }
+      const title = titleFromResponse(res) || ('YouTube ' + new Date().toLocaleDateString());
+      const artist = decodeURIComponent(res.headers.get('X-Artist') || 'YouTube');
+      await saveTrack(blob, { title, artist, type: blob.type || 'audio/mpeg', name: `${title}.mp3` });
       render();
       setYtStatus('✅ Añadida a tu biblioteca', 'ok');
       ytUrl.value = '';
