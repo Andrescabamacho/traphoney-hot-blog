@@ -31,6 +31,9 @@ public/sitemap.xml
 # misc
 .DS_Store
 
+# build artifact del reproductor MP3 (se genera, no se versiona)
+mi-musica.zip
+
 # debug
 *.log
 npm-debug.log*
