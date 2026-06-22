@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#0e0e12" />
+  <title>Mi Música</title>
+  <meta name="description" content="Reproductor MP3 offline. Suena sin internet y con la pantalla apagada." />
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png" />
+
+  <!-- iOS: hace que se comporte como app y siga sonando con la pantalla bloqueada -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Música" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div id="app">
+    <!-- Cabecera -->
+    <header class="topbar">
+      <h1 class="brand">Mi Música</h1>
+      <button id="addBtn" class="icon-btn" title="Añadir canciones" aria-label="Añadir canciones">
+        <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </header>
+
+    <!-- Lista de canciones -->
+    <main id="library" class="library">
+      <div id="emptyState" class="empty">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24" width="56" height="56"><path d="M9 18V5l12-2v13" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="18" r="3" stroke="currentColor" stroke-width="1.6" fill="none"/><circle cx="18" cy="16" r="3" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>
+        </div>
+        <p class="empty-title">Tu biblioteca está vacía</p>
+        <p class="empty-sub">Toca <b>+</b> para añadir tus archivos MP3.<br>Se guardan en el móvil y suenan sin internet.</p>
+        <button id="addBtnEmpty" class="primary-btn">Añadir música</button>
+      </div>
+      <ul id="trackList" class="track-list"></ul>
+    </main>
+
+    <!-- Reproductor inferior -->
+    <footer id="player" class="player hidden">
+      <div class="now-playing">
+        <div class="art" id="art">
+          <svg viewBox="0 0 24 24" width="22" height="22"><path d="M9 18V5l12-2v13" stroke="currentColor" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="18" r="3" stroke="currentColor" stroke-width="1.6" fill="none"/><circle cx="18" cy="16" r="3" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>
+        </div>
+        <div class="meta">
+          <div id="trackTitle" class="title">—</div>
+          <div id="trackArtist" class="artist">Selecciona una canción</div>
+        </div>
+      </div>
+
+      <div class="progress" id="progressWrap">
+        <span id="curTime" class="time">0:00</span>
+        <input id="seek" class="seek" type="range" min="0" max="1000" value="0" step="1" aria-label="Posición" />
+        <span id="durTime" class="time">0:00</span>
+      </div>
+
+      <div class="controls">
+        <button id="shuffleBtn" class="ctrl small" title="Aleatorio" aria-label="Aleatorio">
+          <svg viewBox="0 0 24 24" width="22" height="22"><path d="M16 3h5v5M4 20l17-17M21 16v5h-5M15 15l6 6M4 4l5 5" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button id="prevBtn" class="ctrl" title="Anterior" aria-label="Anterior">
+          <svg viewBox="0 0 24 24" width="26" height="26"><path d="M19 20L9 12l10-8v16zM5 19V5" stroke="currentColor" stroke-width="2" fill="currentColor" stroke-linejoin="round"/></svg>
+        </button>
+        <button id="playBtn" class="ctrl play" title="Reproducir" aria-label="Reproducir">
+          <svg id="playIcon" viewBox="0 0 24 24" width="30" height="30"><path d="M7 4l13 8-13 8V4z" fill="currentColor"/></svg>
+          <svg id="pauseIcon" class="hidden" viewBox="0 0 24 24" width="30" height="30"><path d="M7 4h4v16H7zM13 4h4v16h-4z" fill="currentColor"/></svg>
+        </button>
+        <button id="nextBtn" class="ctrl" title="Siguiente" aria-label="Siguiente">
+          <svg viewBox="0 0 24 24" width="26" height="26"><path d="M5 4l10 8-10 8V4zM19 5v14" stroke="currentColor" stroke-width="2" fill="currentColor" stroke-linejoin="round"/></svg>
+        </button>
+        <button id="repeatBtn" class="ctrl small" title="Repetir" aria-label="Repetir">
+          <svg viewBox="0 0 24 24" width="22" height="22"><path d="M17 2l4 4-4 4M3 11V9a4 4 0 014-4h14M7 22l-4-4 4-4M21 13v2a4 4 0 01-4 4H3" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Input oculto para seleccionar archivos -->
+  <input id="fileInput" type="file" accept="audio/*,.mp3,.m4a,.aac,.ogg,.wav,.flac,.opus" multiple hidden />
+
+  <!-- Audio (un único elemento reutilizado) -->
+  <audio id="audio" preload="metadata"></audio>
+
+  <!-- Toast -->
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
