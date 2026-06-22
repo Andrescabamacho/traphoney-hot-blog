@@ -23,16 +23,28 @@ const MAX_FILESIZE = process.env.MAX_FILESIZE || '100M';
 const PLAYER_CLIENT = process.env.YT_PLAYER_CLIENT || 'android,web';
 
 // Cookies de YouTube (opcional, para el caso de que YouTube pida verificación).
-// Pega el contenido de un cookies.txt en la variable de entorno YT_COOKIES.
+// Cookies de YouTube (recomendado si YouTube pide verificación).
+// Orden de búsqueda:
+//   1) Archivo indicado en YT_COOKIES_FILE
+//   2) Secret File de Render en /etc/secrets/cookies.txt  (recomendado)
+//   3) Contenido pegado en la variable de entorno YT_COOKIES
 let COOKIES_FILE = null;
 try {
-  if (process.env.YT_COOKIES && process.env.YT_COOKIES.trim()) {
+  const explicit = process.env.YT_COOKIES_FILE;
+  const secretPath = '/etc/secrets/cookies.txt';
+  if (explicit && fs.existsSync(explicit)) {
+    COOKIES_FILE = explicit;
+    console.log('Cookies de YouTube cargadas desde', explicit);
+  } else if (fs.existsSync(secretPath)) {
+    COOKIES_FILE = secretPath;
+    console.log('Cookies de YouTube cargadas desde Secret File.');
+  } else if (process.env.YT_COOKIES && process.env.YT_COOKIES.trim()) {
     COOKIES_FILE = path.join(os.tmpdir(), 'yt-cookies.txt');
     fs.writeFileSync(COOKIES_FILE, process.env.YT_COOKIES);
-    console.log('Cookies de YouTube cargadas.');
+    console.log('Cookies de YouTube cargadas desde variable de entorno.');
   }
 } catch (e) {
-  console.warn('No se pudieron escribir las cookies:', e.message);
+  console.warn('No se pudieron cargar las cookies:', e.message);
 }
 
 // Hosts de YouTube permitidos (evita que usen el servidor para otras cosas).
