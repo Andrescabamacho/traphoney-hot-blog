@@ -18,6 +18,23 @@ const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || '*';
 // Tamaño máximo del audio (evita abusos). Por defecto 100 MB.
 const MAX_FILESIZE = process.env.MAX_FILESIZE || '100M';
 
+// Defensa anti-bloqueo de YouTube. Se puede afinar con la variable
+// YT_PLAYER_CLIENT (p. ej. "android", "ios", "web,android").
+const PLAYER_CLIENT = process.env.YT_PLAYER_CLIENT || 'android,web';
+
+// Cookies de YouTube (opcional, para el caso de que YouTube pida verificación).
+// Pega el contenido de un cookies.txt en la variable de entorno YT_COOKIES.
+let COOKIES_FILE = null;
+try {
+  if (process.env.YT_COOKIES && process.env.YT_COOKIES.trim()) {
+    COOKIES_FILE = path.join(os.tmpdir(), 'yt-cookies.txt');
+    fs.writeFileSync(COOKIES_FILE, process.env.YT_COOKIES);
+    console.log('Cookies de YouTube cargadas.');
+  }
+} catch (e) {
+  console.warn('No se pudieron escribir las cookies:', e.message);
+}
+
 // Hosts de YouTube permitidos (evita que usen el servidor para otras cosas).
 const ALLOWED_HOSTS = new Set([
   'youtube.com', 'www.youtube.com', 'm.youtube.com',
@@ -67,13 +84,15 @@ function runYtDlp(url, outTemplate) {
       '--no-playlist',
       '--no-warnings',
       '--no-progress',
+      '--extractor-args', `youtube:player_client=${PLAYER_CLIENT}`,
       '-f', 'bestaudio/best',
       '-x', '--audio-format', 'mp3', '--audio-quality', '0',
       '--max-filesize', MAX_FILESIZE,
       '--print', 'after_move:%(title)s\t%(uploader)s\t%(filepath)s',
       '-o', outTemplate,
-      url,
     ];
+    if (COOKIES_FILE) args.push('--cookies', COOKIES_FILE);
+    args.push(url);
     const child = spawn('yt-dlp', args, { stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '';
     let err = '';
