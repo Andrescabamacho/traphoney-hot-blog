@@ -7,7 +7,8 @@
 /* Core theme configuration */
 @theme {
   /* Font families */
-  --font-sans: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+  --font-sans:
+    var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
   /* Colors */
@@ -172,4 +173,51 @@ input:-webkit-autofill:focus {
 .linkicon {
   display: inline-block;
   vertical-align: middle;
+}
+
+/* === Aspecto "hoja de contabilidad" para las tablas === */
+.sheet {
+  border-collapse: collapse;
+  width: 100%;
+}
+.sheet th,
+.sheet td {
+  border: 1px solid #e6e8eb;
+  padding: 7px 12px;
+}
+/* Columna de fecha resaltada */
+.sheet td:first-child,
+.sheet th:first-child {
+  text-align: left;
+  font-weight: 600;
+  color: #334155;
+  background: #fbf9f1;
+}
+/* Cabecera */
+.sheet thead th {
+  background: #ecfdf5;
+  color: #047857;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+/* Filas alternas (zebra) */
+.sheet tbody tr:nth-child(even) td {
+  background: #f7f9fb;
+}
+.sheet tbody tr:nth-child(even) td:first-child {
+  background: #f3f1e7;
+}
+/* Hover de fila */
+.sheet tbody tr:hover td {
+  background: #eef6ff;
+}
+.sheet tbody tr:hover td:first-child {
+  background: #e7eefb;
+}
+/* Fila TOTAL */
+.sheet tbody .total-row td {
+  background: #ecfdf5;
+  font-weight: 700;
+  color: #064e3b;
+  border-top: 2px solid #a7f3d0;
 }

@@ -88,7 +88,7 @@ export default function PnlDashboard() {
       {/* Tabla dia a dia (primero los numeros) */}
       <Panel title={`Detalle día a día · ${month.nombre}`}>
         <div className="overflow-x-auto">
-          <table className="w-full text-right text-sm whitespace-nowrap">
+          <table className="sheet text-right text-sm whitespace-nowrap">
             <thead className="text-xs text-gray-400 uppercase">
               <tr className="border-b border-gray-100 dark:border-gray-800">
                 <th className="px-2 py-2 text-left">Fecha</th>
@@ -124,7 +124,7 @@ export default function PnlDashboard() {
                   <td className="px-2 py-1.5">{pct(d.pctEntrega)}</td>
                 </tr>
               ))}
-              <tr className="border-t-2 border-gray-200 font-bold dark:border-gray-700">
+              <tr className="total-row font-bold">
                 <td className="px-2 py-2 text-left">TOTAL</td>
                 <td className="px-2 py-2">{eur(facturacion)}</td>
                 <td className="px-2 py-2 text-amber-600">{eur(adsTotal)}</td>

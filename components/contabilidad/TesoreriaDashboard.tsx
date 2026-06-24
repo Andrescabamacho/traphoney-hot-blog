@@ -76,7 +76,7 @@ export default function TesoreriaDashboard() {
       {/* Tabla semanal (primero los numeros) */}
       <Panel title="Detalle semanal">
         <div className="overflow-x-auto">
-          <table className="w-full text-right text-sm whitespace-nowrap">
+          <table className="sheet text-right text-sm whitespace-nowrap">
             <thead className="text-xs text-gray-400 uppercase">
               <tr className="border-b border-gray-100 dark:border-gray-800">
                 <th className="px-2 py-2 text-left">Viernes</th>
