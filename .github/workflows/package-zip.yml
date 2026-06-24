@@ -2,6 +2,9 @@ name: Package zip
 
 # Compila el sitio y deja el zip en la rama 'dist' para poder descargarlo.
 on:
+  push:
+    branches: [claude/accounting-dashboard-integration-ij7jgn]
+    paths: ['.github/workflows/package-zip.yml', 'data/contabilidad/**', 'components/**', 'app/**']
   workflow_dispatch: {}
 
 permissions:
