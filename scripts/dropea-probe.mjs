@@ -1,43 +1,42 @@
 /**
- * Sonda v2: ya sabemos que products/orders/shops existen y devuelven *Pagination.
- * Ahora descubrimos los campos de la paginacion y de cada item (cantidad, coste...).
- * Corre en GitHub Actions (con red hacia Dropea).
+ * Sonda v3: confirmar campos reales de Product y Order, y buscar el stock propio.
  */
 import { dropeaQuery } from './lib/dropea.mjs'
 
 async function probe(label, query) {
   try {
     const data = await dropeaQuery(query)
-    console.log(`✅ ${label} -> ${JSON.stringify(data)}`)
+    console.log(`✅ ${label} -> ${JSON.stringify(data).slice(0, 800)}`)
   } catch (e) {
     console.log(`❌ ${label} -> ${e.message}`)
   }
 }
 
 const run = async () => {
-  console.log('======== USER: otros campos (¿saldo escondido?) ========')
-  await probe('me campos', `{ me { id name email phone role createdAt } }`)
-  console.log('-- wallet a nivel raiz --')
-  await probe('wallet', `{ wallet { id } }`)
-  await probe('wallets', `{ wallets { data { id } } }`)
-  await probe('balance raiz', `{ balance }`)
+  console.log('======== PRODUCT: confirmar campos buenos ========')
+  await probe('product ok', `{ products { data { id name state cost_price pvpr } } }`)
 
-  console.log('\n======== PRODUCTS: campos de la paginacion ========')
-  await probe('products{total}', `{ products { total } }`)
-  await probe('products meta', `{ products { total from to count currentPage lastPage perPage hasMorePages } }`)
-
-  console.log('\n======== PRODUCTS: campos del item (data{...}) ========')
-  await probe('products{data{id}}', `{ products { data { id } } }`)
+  console.log('\n======== PRODUCT: buscar STOCK propio ========')
   await probe(
-    'products item candidatos',
-    `{ products { data { id name title sku reference stock quantity qty available availableStock cost price purchasePrice salePrice pvp basePrice } } }`
+    'product stock candidatos',
+    `{ products { data { id stock_quantity available_stock warehouse_stock units my_stock user_stock quantity_available inventory ordered } } }`
   )
 
-  console.log('\n======== ORDERS: campos del item ========')
-  await probe('orders{total}', `{ orders { total } }`)
+  console.log('\n======== ROOT: queries de inventario propio ========')
+  for (const q of [
+    `{ inventory { total } }`,
+    `{ stocks { total } }`,
+    `{ myProducts { total } }`,
+    `{ myStock { total } }`,
+    `{ warehouse { id } }`,
+  ]) {
+    await probe(q, q)
+  }
+
+  console.log('\n======== ORDER: confirmar campos buenos + muestra ========')
   await probe(
-    'orders item candidatos',
-    `{ orders { data { id status state total totalAmount delivered isDelivered deliveredAt createdAt paymentMethod } } }`
+    'order ok',
+    `{ orders { data { id status total_amount cod_amount iva_amount subtotal_amount created_at payment_method } } }`
   )
 
   console.log('\n======== FIN ========')
