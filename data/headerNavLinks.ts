@@ -1,10 +1,6 @@
 const headerNavLinks = [
-  { href: '/', title: 'Home' },
-  { href: '/blog', title: 'Blog' },
-  { href: '/tags', title: 'Tags' },
-  { href: '/projects', title: 'Projects' },
-  { href: '/contabilidad', title: 'Contabilidad' },
-  { href: '/about', title: 'About' },
+  { href: '/contabilidad', title: 'P&L' },
+  { href: '/contabilidad/tesoreria', title: 'Tesorería' },
 ]
 
 export default headerNavLinks

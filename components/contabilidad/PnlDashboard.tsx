@@ -85,36 +85,7 @@ export default function PnlDashboard() {
         <Kpi label="% Entrega" value={pct(pctEnt)} sub={`${num(entregados)} entregados`} />
       </div>
 
-      {/* Graficas */}
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <Panel title="Profit diario">
-          <BarChart data={dias.map((d) => ({ label: dayLabel(d.fecha), value: d.profit }))} />
-        </Panel>
-        <Panel title="Facturación diaria">
-          <LineChart
-            data={dias.map((d) => ({ label: dayLabel(d.fecha), value: d.totalFacturacion }))}
-            color="#3b82f6"
-          />
-        </Panel>
-        <Panel title="Gasto en publicidad (Google + Meta + TikTok)">
-          <BarChart
-            data={dias.map((d) => ({
-              label: dayLabel(d.fecha),
-              value: d.googleAds + d.metaAds + d.tiktokAds,
-            }))}
-            positiveColor="#f59e0b"
-          />
-        </Panel>
-        <Panel title="ROAS diario">
-          <LineChart
-            data={dias.map((d) => ({ label: dayLabel(d.fecha), value: d.roas ?? 0 }))}
-            color="#8b5cf6"
-            format={(n) => n.toFixed(1) + 'x'}
-          />
-        </Panel>
-      </div>
-
-      {/* Tabla dia a dia */}
+      {/* Tabla dia a dia (primero los numeros) */}
       <Panel title={`Detalle día a día · ${month.nombre}`}>
         <div className="overflow-x-auto">
           <table className="w-full text-right text-sm whitespace-nowrap">
@@ -170,6 +141,35 @@ export default function PnlDashboard() {
           </table>
         </div>
       </Panel>
+
+      {/* Graficas (despues de los numeros) */}
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+        <Panel title="Profit diario">
+          <BarChart data={dias.map((d) => ({ label: dayLabel(d.fecha), value: d.profit }))} />
+        </Panel>
+        <Panel title="Facturación diaria">
+          <LineChart
+            data={dias.map((d) => ({ label: dayLabel(d.fecha), value: d.totalFacturacion }))}
+            color="#3b82f6"
+          />
+        </Panel>
+        <Panel title="Gasto en publicidad (Google + Meta + TikTok)">
+          <BarChart
+            data={dias.map((d) => ({
+              label: dayLabel(d.fecha),
+              value: d.googleAds + d.metaAds + d.tiktokAds,
+            }))}
+            positiveColor="#f59e0b"
+          />
+        </Panel>
+        <Panel title="ROAS diario">
+          <LineChart
+            data={dias.map((d) => ({ label: dayLabel(d.fecha), value: d.roas ?? 0 }))}
+            color="#8b5cf6"
+            format={(n) => n.toFixed(1) + 'x'}
+          />
+        </Panel>
+      </div>
     </div>
   )
 }

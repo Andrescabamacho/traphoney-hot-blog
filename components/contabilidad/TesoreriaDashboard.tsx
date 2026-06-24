@@ -73,25 +73,7 @@ export default function TesoreriaDashboard() {
         />
       </div>
 
-      {/* Graficas */}
-      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <Panel title="Evolución de la tesorería neta">
-          <LineChart
-            data={semanas.map((s) => ({ label: weekLabel(s.fecha), value: s.tesoreriaNeta }))}
-          />
-        </Panel>
-        <Panel title="Variación semana a semana">
-          <BarChart
-            data={semanas.map((s) => ({ label: weekLabel(s.fecha), value: s.variacion ?? 0 }))}
-          />
-        </Panel>
-      </div>
-
-      <Panel title={`Composición de activos · ${weekLabel(last.fecha)}`}>
-        <Donut data={composicion} />
-      </Panel>
-
-      {/* Tabla semanal */}
+      {/* Tabla semanal (primero los numeros) */}
       <Panel title="Detalle semanal">
         <div className="overflow-x-auto">
           <table className="w-full text-right text-sm whitespace-nowrap">
@@ -146,6 +128,24 @@ export default function TesoreriaDashboard() {
           Inputs a mano (saldos de banco, Dropea, stock, COD, IVA, deudas).{' '}
           {num(tes.semanas.length)} semanas registradas.
         </p>
+      </Panel>
+
+      {/* Graficas (despues de los numeros) */}
+      <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+        <Panel title="Evolución de la tesorería neta">
+          <LineChart
+            data={semanas.map((s) => ({ label: weekLabel(s.fecha), value: s.tesoreriaNeta }))}
+          />
+        </Panel>
+        <Panel title="Variación semana a semana">
+          <BarChart
+            data={semanas.map((s) => ({ label: weekLabel(s.fecha), value: s.variacion ?? 0 }))}
+          />
+        </Panel>
+      </div>
+
+      <Panel title={`Composición de activos · ${weekLabel(last.fecha)}`}>
+        <Donut data={composicion} />
       </Panel>
     </div>
   )

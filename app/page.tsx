@@ -1,9 +1,9 @@
-import { sortPosts, allCoreContent } from 'pliny/utils/contentlayer'
-import { allBlogs } from 'contentlayer/generated'
-import Main from './Main'
+import PnlDashboard from '@/components/contabilidad/PnlDashboard'
 
-export default async function Page() {
-  const sortedPosts = sortPosts(allBlogs)
-  const posts = allCoreContent(sortedPosts)
-  return <Main posts={posts} />
+export default function Page() {
+  return (
+    <div className="py-6">
+      <PnlDashboard />
+    </div>
+  )
 }
