@@ -86,7 +86,7 @@ export async function getOrders({ page = 1 } = {}) {
     total: p.total ?? 0,
     page: p.current_page ?? page,
     lastPage: p.last_page ?? 1,
-    perPage: p.per_page ?? (p.data?.length ?? 0),
+    perPage: p.per_page ?? p.data?.length ?? 0,
     items: (p.data ?? []).map((o) => ({
       id: o.id,
       status: o.status,

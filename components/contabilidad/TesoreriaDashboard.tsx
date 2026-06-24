@@ -9,7 +9,9 @@ type Week = (typeof tes)['semanas'][number]
 
 function weekLabel(iso: string) {
   try {
-    return new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: 'short' }).format(new Date(iso))
+    return new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: 'short' }).format(
+      new Date(iso)
+    )
   } catch {
     return iso
   }
@@ -38,7 +40,8 @@ export default function TesoreriaDashboard() {
             Tesorería
           </h1>
           <p className="mt-1 text-gray-500 dark:text-gray-400">
-            Cuánto dinero hay en caja cada viernes y si ganamos o perdemos respecto a la semana anterior.
+            Cuánto dinero hay en caja cada viernes y si ganamos o perdemos respecto a la semana
+            anterior.
           </p>
         </div>
         <Link
@@ -51,20 +54,31 @@ export default function TesoreriaDashboard() {
 
       {/* KPIs */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Kpi label="Tesorería neta" value={eur(last.tesoreriaNeta)} accent="green" sub={weekLabel(last.fecha)} />
+        <Kpi
+          label="Tesorería neta"
+          value={eur(last.tesoreriaNeta)}
+          accent="green"
+          sub={weekLabel(last.fecha)}
+        />
         <Kpi
           label="Variación última semana"
           value={eur(variacion)}
           accent={variacion != null && variacion >= 0 ? 'green' : 'red'}
         />
         <Kpi label="Total activos" value={eur(last.totalActivos)} />
-        <Kpi label="Total pasivos" value={eur(last.totalPasivos)} accent={last.totalPasivos > 0 ? 'red' : 'neutral'} />
+        <Kpi
+          label="Total pasivos"
+          value={eur(last.totalPasivos)}
+          accent={last.totalPasivos > 0 ? 'red' : 'neutral'}
+        />
       </div>
 
       {/* Graficas */}
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <Panel title="Evolución de la tesorería neta">
-          <LineChart data={semanas.map((s) => ({ label: weekLabel(s.fecha), value: s.tesoreriaNeta }))} />
+          <LineChart
+            data={semanas.map((s) => ({ label: weekLabel(s.fecha), value: s.tesoreriaNeta }))}
+          />
         </Panel>
         <Panel title="Variación semana a semana">
           <BarChart
@@ -113,7 +127,11 @@ export default function TesoreriaDashboard() {
                     <td className="px-2 py-1.5 font-semibold">{eur(s.tesoreriaNeta)}</td>
                     <td
                       className={`px-2 py-1.5 font-semibold ${
-                        s.variacion == null ? 'text-gray-300' : s.variacion >= 0 ? 'text-emerald-600' : 'text-red-500'
+                        s.variacion == null
+                          ? 'text-gray-300'
+                          : s.variacion >= 0
+                            ? 'text-emerald-600'
+                            : 'text-red-500'
                       }`}
                     >
                       {s.variacion == null ? '—' : eur(s.variacion)}
@@ -125,8 +143,8 @@ export default function TesoreriaDashboard() {
           </table>
         </div>
         <p className="mt-3 text-xs text-gray-400">
-          Inputs a mano (saldos de banco, COD, IVA, deudas). Dropea y Stock se autocompletan por API.
-          {' '}{num(tes.semanas.length)} semanas registradas.
+          Inputs a mano (saldos de banco, Dropea, stock, COD, IVA, deudas).{' '}
+          {num(tes.semanas.length)} semanas registradas.
         </p>
       </Panel>
     </div>

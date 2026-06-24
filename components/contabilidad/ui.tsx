@@ -12,14 +12,18 @@ export const eur = (n: number | null | undefined, dec = 0) =>
       }).format(n)
 
 export const pct = (n: number | null | undefined) =>
-  n == null ? '—' : new Intl.NumberFormat('es-ES', { style: 'percent', maximumFractionDigits: 1 }).format(n)
+  n == null
+    ? '—'
+    : new Intl.NumberFormat('es-ES', { style: 'percent', maximumFractionDigits: 1 }).format(n)
 
 export const num = (n: number | null | undefined) =>
   n == null ? '—' : new Intl.NumberFormat('es-ES').format(n)
 
 export function dayLabel(iso: string) {
   try {
-    return new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: 'short' }).format(new Date(iso))
+    return new Intl.DateTimeFormat('es-ES', { day: '2-digit', month: 'short' }).format(
+      new Date(iso)
+    )
   } catch {
     return iso
   }
@@ -39,8 +43,7 @@ export function Kpi({
   trend?: number | null
   accent?: 'green' | 'red' | 'neutral'
 }) {
-  const trendColor =
-    trend == null ? '' : trend >= 0 ? 'text-emerald-600' : 'text-red-500'
+  const trendColor = trend == null ? '' : trend >= 0 ? 'text-emerald-600' : 'text-red-500'
   const valueColor =
     accent === 'green'
       ? 'text-emerald-600'

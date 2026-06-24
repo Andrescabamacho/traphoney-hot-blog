@@ -73,7 +73,12 @@ export default function PnlDashboard() {
       {/* KPIs */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-3 xl:grid-cols-6">
         <Kpi label="Facturación" value={eur(facturacion)} sub={`${month.nombre}`} />
-        <Kpi label="Profit neto" value={eur(profit)} accent={profit >= 0 ? 'green' : 'red'} sub="al bolsillo" />
+        <Kpi
+          label="Profit neto"
+          value={eur(profit)}
+          accent={profit >= 0 ? 'green' : 'red'}
+          sub="al bolsillo"
+        />
         <Kpi label="Margen" value={pct(margen)} />
         <Kpi label="ROAS" value={roas ? roas.toFixed(2) + 'x' : '—'} sub={`Ads ${eur(adsTotal)}`} />
         <Kpi label="Pedidos" value={num(pedidos)} />
@@ -137,7 +142,9 @@ export default function PnlDashboard() {
                     {eur(d.googleAds + d.metaAds + d.tiktokAds)}
                   </td>
                   <td className="px-2 py-1.5">{eur(d.cogs)}</td>
-                  <td className={`px-2 py-1.5 font-semibold ${d.profit >= 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+                  <td
+                    className={`px-2 py-1.5 font-semibold ${d.profit >= 0 ? 'text-emerald-600' : 'text-red-500'}`}
+                  >
                     {eur(d.profit)}
                   </td>
                   <td className="px-2 py-1.5">{pct(d.profitPct)}</td>

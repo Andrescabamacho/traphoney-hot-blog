@@ -9,9 +9,11 @@
 type Point = { label: string; value: number }
 
 const fmtEur = (n: number) =>
-  new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(
-    n || 0
-  )
+  new Intl.NumberFormat('es-ES', {
+    style: 'currency',
+    currency: 'EUR',
+    maximumFractionDigits: 0,
+  }).format(n || 0)
 
 function niceLabels(data: Point[], max = 8) {
   const step = Math.max(1, Math.ceil(data.length / max))
@@ -129,7 +131,14 @@ export function BarChart({
       })}
       {labels.map((l, i) =>
         l ? (
-          <text key={i} x={padL + i * bw + bw / 2} y={h - 12} textAnchor="middle" fontSize="11" fill="#9aa5b1">
+          <text
+            key={i}
+            x={padL + i * bw + bw / 2}
+            y={h - 12}
+            textAnchor="middle"
+            fontSize="11"
+            fill="#9aa5b1"
+          >
             {l}
           </text>
         ) : null
@@ -138,7 +147,16 @@ export function BarChart({
   )
 }
 
-const DONUT_COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#ef4444', '#64748b']
+const DONUT_COLORS = [
+  '#10b981',
+  '#3b82f6',
+  '#f59e0b',
+  '#8b5cf6',
+  '#ec4899',
+  '#14b8a6',
+  '#ef4444',
+  '#64748b',
+]
 
 export function Donut({
   data,
@@ -184,7 +202,7 @@ export function Donut({
               <span className="inline-block h-3 w-3 rounded-sm" style={{ background: a.color }} />
               {a.label}
             </span>
-            <span className="tabular-nums font-medium text-gray-900">
+            <span className="font-medium text-gray-900 tabular-nums">
               {fmtEur(a.value)} <span className="text-gray-400">({Math.round(a.pct * 100)}%)</span>
             </span>
           </li>
