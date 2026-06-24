@@ -1,8 +1,7 @@
 /**
- * Sonda de descubrimiento del esquema de Dropea.
- * Como la introspeccion esta bloqueada pero el servidor sugiere nombres ("Did you mean"),
- * probamos campos candidatos y reportamos cuales existen. Pensado para correr en GitHub
- * Actions (que SI tiene salida a internet hacia Dropea).
+ * Sonda v2: ya sabemos que products/orders/shops existen y devuelven *Pagination.
+ * Ahora descubrimos los campos de la paginacion y de cada item (cantidad, coste...).
+ * Corre en GitHub Actions (con red hacia Dropea).
  */
 import { dropeaQuery } from './lib/dropea.mjs'
 
@@ -10,49 +9,36 @@ async function probe(label, query) {
   try {
     const data = await dropeaQuery(query)
     console.log(`✅ ${label} -> ${JSON.stringify(data)}`)
-    return true
   } catch (e) {
     console.log(`❌ ${label} -> ${e.message}`)
-    return false
   }
 }
 
 const run = async () => {
-  console.log('======== BASELINE (usuario) ========')
-  await probe('me{id name}', `{ me { id name } }`)
+  console.log('======== USER: otros campos (¿saldo escondido?) ========')
+  await probe('me campos', `{ me { id name email phone role createdAt } }`)
+  console.log('-- wallet a nivel raiz --')
+  await probe('wallet', `{ wallet { id } }`)
+  await probe('wallets', `{ wallets { data { id } } }`)
+  await probe('balance raiz', `{ balance }`)
 
-  console.log('\n======== SALDO / WALLET (campos en me) ========')
-  for (const f of [
-    'wallet', 'saldo', 'balance', 'credit', 'credits', 'money', 'funds',
-    'walletBalance', 'available', 'amount', 'cash', 'deposit', 'budget',
-  ]) {
-    await probe(`me{${f}}`, `{ me { ${f} } }`)
-  }
-  console.log('-- wallet como objeto --')
-  for (const sel of ['wallet{balance}', 'wallet{amount}', 'wallet{total}', 'wallet{available}']) {
-    await probe(`me{${sel}}`, `{ me { ${sel} } }`)
-  }
+  console.log('\n======== PRODUCTS: campos de la paginacion ========')
+  await probe('products{total}', `{ products { total } }`)
+  await probe('products meta', `{ products { total from to count currentPage lastPage perPage hasMorePages } }`)
 
-  console.log('\n======== PRODUCTOS / STOCK ========')
-  for (const q of [
-    `{ products { id } }`,
-    `{ productList { id } }`,
-    `{ products { id name stock } }`,
-    `{ products { id name quantity } }`,
-    `{ products(limit:1) { id name stock cost price } }`,
-  ]) {
-    await probe(q, q)
-  }
+  console.log('\n======== PRODUCTS: campos del item (data{...}) ========')
+  await probe('products{data{id}}', `{ products { data { id } } }`)
+  await probe(
+    'products item candidatos',
+    `{ products { data { id name title sku reference stock quantity qty available availableStock cost price purchasePrice salePrice pvp basePrice } } }`
+  )
 
-  console.log('\n======== PEDIDOS / ORDERS ========')
-  for (const q of [`{ orders { id } }`, `{ orderList { id } }`, `{ orders(limit:1) { id status total } }`]) {
-    await probe(q, q)
-  }
-
-  console.log('\n======== TIENDAS / SHOPS ========')
-  for (const q of [`{ shops { id } }`, `{ shopList { id } }`, `{ shop { id } }`]) {
-    await probe(q, q)
-  }
+  console.log('\n======== ORDERS: campos del item ========')
+  await probe('orders{total}', `{ orders { total } }`)
+  await probe(
+    'orders item candidatos',
+    `{ orders { data { id status state total totalAmount delivered isDelivered deliveredAt createdAt paymentMethod } } }`
+  )
 
   console.log('\n======== FIN ========')
 }
