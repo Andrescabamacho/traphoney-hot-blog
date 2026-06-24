@@ -1,0 +1,38 @@
+{
+  "generatedAt": "2026-06-24T05:12:43.283Z",
+  "currency": "EUR",
+  "cash": {
+    "banks": [
+      {
+        "name": "BBVA Empresa",
+        "balance": 0,
+        "source": "manual",
+        "updatedAt": null
+      },
+      {
+        "name": "CaixaBank",
+        "balance": 0,
+        "source": "manual",
+        "updatedAt": null
+      }
+    ],
+    "dropeaWallet": {
+      "balance": 0,
+      "source": "dropea",
+      "updatedAt": null
+    }
+  },
+  "stock": {
+    "totalValue": 0,
+    "totalUnits": 0,
+    "source": "dropea",
+    "items": []
+  },
+  "totals": {
+    "cashInBanks": 0,
+    "cashInDropea": 0,
+    "cashTotal": 0,
+    "stockValue": 0,
+    "treasuryTotal": 0
+  }
+}
