@@ -1,0 +1,34 @@
+name: Package zip
+
+# Compila el sitio y deja el zip en la rama 'dist' para poder descargarlo.
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+      - run: yarn install --immutable
+      - run: yarn build
+        env:
+          EXPORT: 1
+          UNOPTIMIZED: 1
+      - name: Empaquetar out/ en zip
+        run: |
+          cd out
+          zip -r ../traphoney-contabilidad.zip .
+      - name: Publicar zip en rama dist
+        run: |
+          git checkout --orphan dist
+          git rm -rf --cached . >/dev/null 2>&1 || true
+          git add -f traphoney-contabilidad.zip
+          git -c user.name=ci -c user.email=ci@local commit -m "dist: sitio compilado en zip"
+          git push -f origin dist
