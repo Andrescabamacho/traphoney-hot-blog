@@ -1,0 +1,22 @@
+name: Build check
+
+# Verifica que el sitio (incluido el dashboard de contabilidad) compila.
+on:
+  push:
+    branches: [claude/accounting-dashboard-integration-ij7jgn]
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+      - run: yarn install --immutable
+      - run: yarn build
+        env:
+          EXPORT: 1
+          UNOPTIMIZED: 1
