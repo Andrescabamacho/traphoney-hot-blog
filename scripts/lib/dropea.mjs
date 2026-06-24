@@ -1,16 +1,17 @@
 /**
  * Cliente de la API GraphQL de Dropea.
  *
- * Autenticacion: token personal generado en app.dropea.com (seccion API / tokens).
- * Se envia como cabecera. El nombre exacto de la cabecera se confirma con la doc:
- *   - Por defecto probamos `Authorization: Bearer <token>`.
- *   - Si Dropea usa una cabecera propia, ajusta DROPEA_AUTH_HEADER / DROPEA_AUTH_SCHEME.
+ * Autenticacion: token personal generado en app.dropea.com (Mi Cuenta -> Access Tokens).
+ * Dropea usa la cabecera `x-api-key` con el token pelado (sin "Bearer").
+ *   - Endpoint: https://api.dropea.com/graphql/dropshippers
+ *   - Header por defecto: `x-api-key: <token>`
+ *   - Se puede sobreescribir con DROPEA_AUTH_HEADER / DROPEA_AUTH_SCHEME si cambiara.
  *
  * Variables de entorno:
- *   DROPEA_API_URL      -> endpoint GraphQL (ej. https://api.dropea.com/graphql)
+ *   DROPEA_API_URL      -> endpoint GraphQL (https://api.dropea.com/graphql/dropshippers)
  *   DROPEA_TOKEN        -> token personal (SECRETO)
- *   DROPEA_AUTH_HEADER  -> opcional, por defecto "Authorization"
- *   DROPEA_AUTH_SCHEME  -> opcional, por defecto "Bearer" (pon "" si el token va pelado)
+ *   DROPEA_AUTH_HEADER  -> opcional, por defecto "x-api-key"
+ *   DROPEA_AUTH_SCHEME  -> opcional, por defecto "" (token sin prefijo)
  *
  * IMPORTANTE sobre los nombres de campos:
  * Los scopes confirmados son user_me, product_list/product_view, order_list/order_view,
@@ -22,8 +23,8 @@
 function buildHeaders() {
   const token = process.env.DROPEA_TOKEN
   if (!token) throw new Error('Falta DROPEA_TOKEN en el entorno.')
-  const header = process.env.DROPEA_AUTH_HEADER || 'Authorization'
-  const scheme = process.env.DROPEA_AUTH_SCHEME ?? 'Bearer'
+  const header = process.env.DROPEA_AUTH_HEADER || 'x-api-key'
+  const scheme = process.env.DROPEA_AUTH_SCHEME ?? ''
   const value = scheme ? `${scheme} ${token}` : token
   return { 'Content-Type': 'application/json', [header]: value }
 }
