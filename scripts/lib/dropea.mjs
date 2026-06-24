@@ -30,9 +30,10 @@ function buildHeaders() {
 }
 
 /** Ejecuta una operacion GraphQL contra Dropea y devuelve `data` (lanza si hay errores). */
+const DEFAULT_URL = 'https://api.dropea.com/graphql/dropshippers'
+
 export async function dropeaQuery(query, variables = {}) {
-  const url = process.env.DROPEA_API_URL
-  if (!url) throw new Error('Falta DROPEA_API_URL en el entorno.')
+  const url = process.env.DROPEA_API_URL || DEFAULT_URL
 
   const res = await fetch(url, {
     method: 'POST',
