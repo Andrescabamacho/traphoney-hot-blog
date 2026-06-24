@@ -1,0 +1,11 @@
+# Configuración de despliegue en Netlify (export estático de Next.js).
+# Importa este repo en Netlify (Add new site → Import from Git) y desplegará solo.
+[build]
+  command = "yarn build"
+  publish = "out"
+
+[build.environment]
+  EXPORT = "1"
+  UNOPTIMIZED = "1"
+  NODE_VERSION = "20"
+  YARN_VERSION = "3.6.1"
