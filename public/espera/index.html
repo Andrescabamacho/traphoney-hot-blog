@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <title>Respira · Espera</title>
+
+  <!-- Para que al añadirla a la pantalla de inicio se vea como una app a pantalla completa -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Respira" />
+  <meta name="theme-color" content="#0f0f17" />
+  <link rel="apple-touch-icon" href="/static/favicons/apple-touch-icon.png" />
+  <link rel="icon" href="/static/favicons/favicon.ico" />
+
+  <style>
+    :root {
+      --bg1: #0f0f17;
+      --bg2: #1a1130;
+      --txt: #f3f0ff;
+      --muted: #a89fc9;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin: 0; height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      color: var(--txt);
+      background: radial-gradient(circle at 50% 20%, var(--bg2), var(--bg1) 70%);
+      overflow: hidden;
+      -webkit-user-select: none; user-select: none;
+    }
+    body {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: env(safe-area-inset-top) 24px env(safe-area-inset-bottom);
+      text-align: center;
+    }
+    .hidden { display: none !important; }
+
+    /* ---------- Menú ---------- */
+    #menu h1 { font-size: 28px; font-weight: 700; margin: 0 0 6px; }
+    #menu p  { color: var(--muted); margin: 0 0 36px; font-size: 16px; }
+    .btns { display: flex; flex-direction: column; gap: 16px; width: 100%; max-width: 320px; }
+    .app-btn {
+      display: flex; align-items: center; gap: 14px;
+      width: 100%; padding: 18px 22px; border: none; border-radius: 18px;
+      font-size: 19px; font-weight: 600; color: #fff; cursor: pointer;
+      transition: transform .12s ease;
+    }
+    .app-btn:active { transform: scale(.96); }
+    .app-btn .emoji { font-size: 26px; }
+    .ig { background: linear-gradient(45deg, #f09433, #e6683c 30%, #dc2743 60%, #cc2366 90%); }
+    .tk { background: linear-gradient(45deg, #25F4EE, #000 50%, #FE2C55); }
+
+    /* ---------- Cuenta atrás ---------- */
+    #count { position: relative; width: 260px; height: 260px; margin-bottom: 30px; }
+    #count svg { transform: rotate(-90deg); width: 100%; height: 100%; }
+    #count .track { stroke: rgba(255,255,255,.08); }
+    #count .prog  { stroke: #b794ff; stroke-linecap: round; transition: stroke-dashoffset .1s linear; }
+    .num {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      font-size: 96px; font-weight: 800; font-variant-numeric: tabular-nums;
+    }
+    /* círculo que "respira" */
+    .breath {
+      position: absolute; inset: 22px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(183,148,255,.25), transparent 70%);
+      animation: breathe 4s ease-in-out infinite;
+    }
+    @keyframes breathe { 0%,100% { transform: scale(.85); opacity:.5 } 50% { transform: scale(1.05); opacity:1 } }
+
+    #target-name { font-size: 20px; font-weight: 600; margin: 0 0 4px; }
+    #phrase { color: var(--muted); font-size: 16px; min-height: 22px; margin: 0 0 30px; max-width: 300px; }
+
+    .actions { display: flex; flex-direction: column; gap: 12px; width: 100%; max-width: 320px; }
+    .go {
+      padding: 16px; border: none; border-radius: 16px; font-size: 17px; font-weight: 700;
+      background: #b794ff; color: #1a1130; cursor: pointer;
+    }
+    .go:disabled { opacity: .4; }
+    .cancel {
+      padding: 14px; border: 1px solid rgba(255,255,255,.18); border-radius: 16px;
+      font-size: 16px; font-weight: 600; background: transparent; color: var(--muted); cursor: pointer;
+    }
+    .cancel:active, .go:active { transform: scale(.97); }
+  </style>
+</head>
+<body>
+
+  <!-- Pantalla 1: menú (cuando entras sin elegir app) -->
+  <section id="menu">
+    <h1>Antes de entrar…</h1>
+    <p>Respira. ¿A dónde quieres ir?</p>
+    <div class="btns">
+      <button class="app-btn ig" onclick="start('instagram')"><span class="emoji">📸</span> Instagram</button>
+      <button class="app-btn tk" onclick="start('tiktok')"><span class="emoji">🎵</span> TikTok</button>
+    </div>
+  </section>
+
+  <!-- Pantalla 2: cuenta atrás -->
+  <section id="screen" class="hidden">
+    <div id="count">
+      <div class="breath"></div>
+      <svg viewBox="0 0 100 100">
+        <circle class="track" cx="50" cy="50" r="45" fill="none" stroke-width="6" />
+        <circle class="prog"  cx="50" cy="50" r="45" fill="none" stroke-width="6"
+                pathLength="100" stroke-dasharray="100" stroke-dashoffset="0" />
+      </svg>
+      <div class="num" id="num">5</div>
+    </div>
+    <p id="target-name">Instagram</p>
+    <p id="phrase">Tómate un momento.</p>
+    <div class="actions">
+      <button class="go" id="go" disabled onclick="openApp()">Entrar</button>
+      <button class="cancel" onclick="cancel()">Mejor no, salir</button>
+    </div>
+  </section>
+
+  <script>
+    // ---- Personaliza aquí ----
+    const SEGUNDOS_POR_DEFECTO = 5;
+    const FRASES = [
+      "¿De verdad lo necesitas ahora?",
+      "Respira hondo.",
+      "Este momento es tuyo, no del scroll.",
+      "Puedes elegir no entrar.",
+      "Cinco segundos para pensarlo."
+    ];
+    const APPS = {
+      instagram: { nombre: "Instagram", esquema: "instagram://app",  web: "https://www.instagram.com" },
+      tiktok:    { nombre: "TikTok",    esquema: "tiktok://",         web: "https://www.tiktok.com" }
+    };
+    // --------------------------
+
+    const params = new URLSearchParams(location.search);
+    const segParam = parseInt(params.get("seg") || params.get("s"), 10);
+    const SEGUNDOS = (!isNaN(segParam) && segParam >= 0) ? segParam : SEGUNDOS_POR_DEFECTO;
+
+    let actual = null;     // app objetivo
+    let timer = null;      // intervalo
+    let raf = null;        // animación del aro
+
+    const $menu   = document.getElementById("menu");
+    const $screen = document.getElementById("screen");
+    const $num    = document.getElementById("num");
+    const $prog   = document.querySelector(".prog");
+    const $go      = document.getElementById("go");
+    const $name   = document.getElementById("target-name");
+    const $phrase = document.getElementById("phrase");
+
+    function start(appKey) {
+      actual = APPS[appKey];
+      if (!actual) return;
+      $name.textContent = actual.nombre;
+      $phrase.textContent = FRASES[Math.floor((appKey.length + SEGUNDOS) % FRASES.length)];
+      $menu.classList.add("hidden");
+      $screen.classList.remove("hidden");
+
+      $go.disabled = true;
+      const total = SEGUNDOS * 1000;
+      const inicio = performance.now();
+      $num.textContent = SEGUNDOS;
+      $prog.style.strokeDashoffset = 0;
+
+      // Aro animado
+      function frame(now) {
+        const t = Math.min((now - inicio) / total, 1);
+        $prog.style.strokeDashoffset = (100 * t).toFixed(2);
+        const restante = Math.ceil(SEGUNDOS - (now - inicio) / 1000);
+        $num.textContent = Math.max(restante, 0);
+        if (t < 1) {
+          raf = requestAnimationFrame(frame);
+        } else {
+          $num.textContent = "0";
+          $go.disabled = false;
+          openApp(); // se abre solo al terminar
+        }
+      }
+      if (SEGUNDOS === 0) { $go.disabled = false; openApp(); }
+      else raf = requestAnimationFrame(frame);
+    }
+
+    function openApp() {
+      if (!actual) return;
+      cancelAnimationFrame(raf);
+      // Intenta abrir la app nativa; si no está instalada, abre la web.
+      const t0 = Date.now();
+      window.location.href = actual.esquema;
+      setTimeout(() => {
+        // Solo caemos a la web si seguimos visibles (la app no se abrió)
+        if (!document.hidden && Date.now() - t0 < 1500) {
+          window.location.href = actual.web;
+        }
+      }, 1000);
+    }
+
+    function cancel() {
+      cancelAnimationFrame(raf);
+      clearInterval(timer);
+      actual = null;
+      $screen.classList.add("hidden");
+      $menu.classList.remove("hidden");
+      // Si entraste con ?app=, al cancelar intentamos cerrar/volver atrás.
+      if (params.get("app")) {
+        history.length > 1 ? history.back() : null;
+      }
+    }
+
+    // Si llegas con ?app=instagram o ?app=tiktok, empieza directo (ideal para iconos en la pantalla de inicio)
+    const directo = params.get("app");
+    if (directo && APPS[directo]) start(directo);
+  </script>
+</body>
+</html>
