@@ -50,7 +50,9 @@ const securityHeaders = [
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy
   {
     key: 'Permissions-Policy',
-    value: 'camera=(), microphone=(), geolocation=()',
+    // camera/microphone allowed for same-origin so the /videocall practice
+    // page can access the device camera; geolocation stays disabled.
+    value: 'camera=(self), microphone=(self), geolocation=()',
   },
 ]
 
