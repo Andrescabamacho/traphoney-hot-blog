@@ -351,13 +351,32 @@
   sideRightBtn.addEventListener('click', function () { setSide('right'); });
   document.getElementById('addBtn').addEventListener('click', addMessage);
   document.getElementById('dlBtn').addEventListener('click', function () {
+    var filename = 'conversacion-' + Date.now() + '.png';
+    canvas.toBlob(function (blob) {
+      if (!blob) return;
+      // Web Share API: funciona en iOS 15+ y Android Chrome para guardar en Fotos/Archivos
+      if (navigator.canShare) {
+        var file = new File([blob], filename, { type: 'image/png' });
+        if (navigator.canShare({ files: [file] })) {
+          navigator.share({ files: [file], title: 'Conversación' }).catch(function (e) {
+            if (e.name !== 'AbortError') fallbackDownload(blob, filename);
+          });
+          return;
+        }
+      }
+      fallbackDownload(blob, filename);
+    }, 'image/png');
+  });
+  function fallbackDownload(blob, filename) {
+    var url = URL.createObjectURL(blob);
     var a = document.createElement('a');
-    a.download = 'conversacion-' + Date.now() + '.png';
-    a.href = canvas.toDataURL('image/png');
+    a.download = filename;
+    a.href = url;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-  });
+    URL.revokeObjectURL(url);
+  }
   document.getElementById('avatarInput').addEventListener('change', function (e) {
     var f = e.target.files && e.target.files[0];
     if (!f) return;

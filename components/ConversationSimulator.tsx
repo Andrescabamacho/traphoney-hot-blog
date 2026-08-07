@@ -266,10 +266,32 @@ export default function ConversationSimulator() {
   const download = () => {
     const canvas = canvasRef.current
     if (!canvas) return
-    const link = document.createElement('a')
-    link.download = `conversacion-${Date.now()}.png`
-    link.href = canvas.toDataURL('image/png')
-    link.click()
+    const filename = `conversacion-${Date.now()}.png`
+    canvas.toBlob((blob) => {
+      if (!blob) return
+      // Web Share API: funciona en iOS 15+ y Android Chrome
+      if (navigator.canShare) {
+        const file = new File([blob], filename, { type: 'image/png' })
+        if (navigator.canShare({ files: [file] })) {
+          navigator.share({ files: [file], title: 'Conversación' }).catch((e) => {
+            if (e.name !== 'AbortError') fallbackDownload(blob, filename)
+          })
+          return
+        }
+      }
+      fallbackDownload(blob, filename)
+    }, 'image/png')
+  }
+
+  const fallbackDownload = (blob: Blob, filename: string) => {
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.download = filename
+    a.href = url
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+    URL.revokeObjectURL(url)
   }
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
